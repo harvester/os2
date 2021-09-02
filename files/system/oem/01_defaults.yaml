@@ -5,10 +5,11 @@
 # Before you change this file manually,
 # consider copying this file to /usr/local/cloud-config or
 # copy the file with a prefix starting by 90, e.g. /oem/91_custom.yaml
-name: "Cloud providers metadata"
+name: "General settings"
 stages:
-   network:
-     - name: "Cloud providers datasources"
-       datasource:
-         providers: ["aws", "gcp", "cdrom", "openstack"]
-         path: "/oem"
+  initramfs:
+    - name: "Setup distro"
+      systemd_firstboot:
+        keymap: us
+        locale: en_US.UTF-8
+        timezone: UTC

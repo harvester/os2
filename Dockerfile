@@ -91,7 +91,6 @@ ARG CACHEBUST
 RUN luet install -y \
     toolchain/yip \
     utils/installer \
-    system/cloud-config \
     system/cos-setup \
     system/immutable-rootfs \
     system/grub-config \

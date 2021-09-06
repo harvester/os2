@@ -93,7 +93,7 @@ RUN luet install -y \
     utils/installer \
     system/cos-setup \
     system/immutable-rootfs \
-    system/grub-config \
+    system/grub2-config \
     selinux/k3s \
     selinux/rancher \
     utils/k9s \

@@ -90,6 +90,7 @@ RUN zypper in -y traceroute \
 ARG CACHEBUST
 RUN luet install -y \
     toolchain/yip \
+    toolchain/luet \
     utils/installer \
     system/cos-setup \
     system/immutable-rootfs \

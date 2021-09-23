@@ -75,6 +75,14 @@ RUN zypper in -y \
     vim \
     which
 
+# Additional firmware packages
+RUN zypper in -y kernel-firmware-chelsio \
+    kernel-firmware-liquidio \
+    kernel-firmware-mediatek \
+    kernel-firmware-marvell \
+    kernel-firmware-qlogic \
+    kernel-firmware-usb-network
+
 # Harvester needs these packages
 RUN zypper in -y apparmor-parser \
     zstd
@@ -85,7 +93,10 @@ RUN zypper in -y traceroute \
     lsof \
     sysstat \
     iotop \
-    hdparm
+    hdparm \
+    pciutils \
+    ethtool \
+    dmidecode
 
 ARG CACHEBUST
 RUN luet install -y \

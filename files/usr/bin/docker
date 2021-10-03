@@ -1,0 +1,2 @@
+#!/bin/bash
+nerdctl --namespace k8s.io $@

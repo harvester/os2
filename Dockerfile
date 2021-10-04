@@ -82,7 +82,8 @@ RUN zypper in -y kernel-firmware-chelsio \
     kernel-firmware-mediatek \
     kernel-firmware-marvell \
     kernel-firmware-qlogic \
-    kernel-firmware-usb-network
+    kernel-firmware-usb-network \
+    ucode-intel ucode-amd
 
 # Harvester needs these packages
 RUN zypper in -y apparmor-parser \

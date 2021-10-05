@@ -12,7 +12,7 @@ stages:
       environment:
         VOLUMES: "LABEL=COS_OEM:/oem LABEL=COS_PERSISTENT:/usr/local"
         OVERLAY: "tmpfs:25%"
-        RW_PATHS: "/var /etc /srv"
+        RW_PATHS: "/var /etc /srv /boot"
         PERSISTENT_STATE_PATHS: >-
           /etc/systemd
           /etc/rancher
@@ -29,6 +29,7 @@ stages:
           /var/lib/wicked
           /var/lib/longhorn
           /var/lib/cni
+          /var/crash
         PERSISTENT_STATE_BIND: "true"
     - if: '[ -f "/run/cos/recovery_mode" ]'
       # omit the persistent partition on recovery mode

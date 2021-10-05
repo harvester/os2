@@ -100,7 +100,8 @@ RUN zypper in -y traceroute \
     ethtool \
     dmidecode \
     numactl \
-    ipmitool
+    ipmitool \
+    kdump
 
 ARG CACHEBUST
 RUN luet install -y \

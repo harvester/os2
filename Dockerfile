@@ -98,7 +98,9 @@ RUN zypper in -y traceroute \
     hdparm \
     pciutils \
     ethtool \
-    dmidecode
+    dmidecode \
+    numactl \
+    ipmitool
 
 ARG CACHEBUST
 RUN luet install -y \

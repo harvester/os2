@@ -83,6 +83,7 @@ RUN zypper in -y kernel-firmware-chelsio \
     kernel-firmware-marvell \
     kernel-firmware-qlogic \
     kernel-firmware-usb-network \
+    kernel-firmware-amdgpu kernel-firmware-nvidia kernel-firmware-radeon \
     ucode-intel ucode-amd
 
 # Harvester needs these packages

@@ -116,7 +116,8 @@ RUN luet install -y \
     selinux/rancher \
     utils/k9s \
     utils/nerdctl \
-    utils/rancherd@0.0.1-alpha07-9
+    utils/rancherd@0.0.1-alpha07-9 \
+    toolchain/yq
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal

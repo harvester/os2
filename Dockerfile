@@ -108,15 +108,15 @@ ARG CACHEBUST
 RUN luet install -y \
     toolchain/yip \
     toolchain/luet \
-    utils/installer@0.18 \
+    utils/installer@0.21 \
     system/cos-setup \
-    system/immutable-rootfs@0.2.0-11 \
+    system/immutable-rootfs@0.2.0-12 \
     system/grub2-config \
     selinux/k3s \
     selinux/rancher \
     utils/k9s \
     utils/nerdctl \
-    utils/rancherd@0.0.1-alpha07-9 \
+    utils/rancherd@0.0.1-alpha11-2 \
     toolchain/yq
 
 # Create the folder for journald persistent data

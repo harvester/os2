@@ -20,6 +20,7 @@ COPY tools /
 RUN luet install -y toolchain/luet-makeiso
 
 FROM base
+ARG RANCHERD_VERSION=v0.0.1-alpha07
 RUN zypper in -y \
     bash-completion \
     conntrack-tools \
@@ -116,8 +117,10 @@ RUN luet install -y \
     selinux/rancher \
     utils/k9s \
     utils/nerdctl \
-    utils/rancherd@0.0.1-alpha11-2 \
     toolchain/yq
+
+# Download rancherd binary to pin the version
+RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal

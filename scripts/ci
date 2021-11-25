@@ -1,21 +1,15 @@
-#!/bin/sh -ex
+#!/bin/sh -e
 
-get_git()
-{
-  if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
-      DIRTY="-dirty"
-  fi
+source $(dirname $0)/version
 
-  COMMIT=$(git rev-parse --short HEAD)
-}
-
-
-get_git
-DATE=$(date +%Y%m%d)
-
+export OS_NAME=Harvester
 export OS_REPO=rancher/harvester-os
-export OS_LABEL="base-${DATE}"
-export OS_VERSION=${DATE}
-export OS_GIT="${COMMIT}${DIRTY}"
+export OS_LABEL="${VERSION}"
+export OS_VERSION=${VERSION}
 
 envsubst >os-release <os-release.tmpl
+
+echo "==============="
+echo "OS release info"
+echo "==============="
+cat os-release

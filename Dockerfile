@@ -89,7 +89,8 @@ RUN zypper in -y kernel-firmware-chelsio \
 
 # Harvester needs these packages
 RUN zypper in -y apparmor-parser \
-    zstd
+    zstd \
+    nginx
 
 # Additional useful packages
 RUN zypper in -y traceroute \
@@ -104,6 +105,8 @@ RUN zypper in -y traceroute \
     numactl \
     ipmitool \
     kdump
+
+RUN zypper clean
 
 ARG CACHEBUST
 RUN luet install -y \

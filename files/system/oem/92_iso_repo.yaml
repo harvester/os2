@@ -1,0 +1,20 @@
+# start an nginx server to server ISO content if
+# - `harvester.serve_iso=true` is in kernel parameters, or
+# - `/harvester-serve-iso` file exists
+name: "serve iso content"
+stages:
+  initramfs:
+    - if: grep -q harvester.serve_iso=true /proc/cmdline || [ -e /harvester-serve-iso ]
+      directories:
+      - path: /var/log/nginx
+        permissions: 0664
+      commands:
+      - |
+        for i in /sys/class/net/{eth*,en*,ib*}; do
+          [ -e $i ] || continue
+          if_cfg="/etc/sysconfig/network/ifcfg-$(basename $i)"
+          echo "BOOTPROTO=dhcp" > $if_cfg
+          echo "STARTMODE=onboot" >> $if_cfg
+        done
+      - cp /etc/nginx/conf.d/iso.conf.disabled /etc/nginx/conf.d/iso.conf
+      - systemctl enable nginx

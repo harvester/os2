@@ -1,0 +1,8 @@
+# serve iso contents
+server {
+    listen       80;
+
+    location /harvester-iso/ {
+        alias /run/initramfs/live/;
+    }
+}

@@ -1,5 +1,4 @@
-ARG LUET_VERSION=0.16.7
-FROM quay.io/luet/base:$LUET_VERSION AS luet
+FROM quay.io/costoolkit/releases-green:luet-toolchain-0.21.2 as luet
 
 FROM opensuse/leap:15.3 AS base
 

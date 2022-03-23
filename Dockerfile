@@ -103,7 +103,8 @@ RUN zypper in -y traceroute \
     dmidecode \
     numactl \
     ipmitool \
-    kdump
+    kdump \
+    supportutils
 
 RUN zypper clean
 

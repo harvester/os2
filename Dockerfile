@@ -123,8 +123,7 @@ RUN luet install -y \
     toolchain/yq
 
 # Download rancherd binary to pin the version
-# Workaround until https://github.com/rancher/rancherd/issues/22 is resolved.
-RUN curl -o /usr/bin/rancherd -sfL  https://github.com/bk201/rancherd/releases/download/v0.0.1-alpha07-harvester1/rancherd-amd64 && chmod 0755 /usr/bin/rancherd
+RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal

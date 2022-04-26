@@ -74,7 +74,8 @@ RUN zypper in -y \
     timezone \
     vim \
     which \
-    lshw
+    lshw \
+    fio
 
 # Additional firmware packages
 RUN zypper in -y kernel-firmware-chelsio \

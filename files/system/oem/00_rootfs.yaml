@@ -19,6 +19,7 @@ stages:
           /etc/ssh
           /etc/iscsi 
           /etc/cni
+          /etc/pki/trust/anchors
           /home
           /opt
           /root

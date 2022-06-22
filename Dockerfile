@@ -26,7 +26,9 @@ RUN mkdir -p /oem
 COPY files/ /
 RUN mkinitrd
 
-COPY os-release /usr/lib/os-release
+# Append more options
+COPY os-release /tmp
+RUN cat /tmp/os-release >> /usr/lib/os-release && rm -f /tmp/os-release
 
 # Remove /etc/cos/config to use default values
 RUN rm -f /etc/cos/config

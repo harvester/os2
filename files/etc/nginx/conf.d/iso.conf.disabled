@@ -3,6 +3,7 @@ server {
     listen       80;
 
     location /harvester-iso/ {
+        limit_except GET POST { deny  all; }
         alias /run/initramfs/live/;
     }
 }

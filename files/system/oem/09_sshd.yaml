@@ -4,6 +4,7 @@ stages:
      - name: "clear original config"
        commands:
        - |
+         sed -i '/### Harvester Config/,$d' /etc/ssh/sshd_config
          sed -i 's/^\([^#]*PermitRootLogin.*\)/#\1/' /etc/ssh/sshd_config
          sed -i 's/^\([^#]*LoginGraceTime.*\)/#\1/' /etc/ssh/sshd_config
          sed -i 's/^\([^#]*AllowGroups.*\)/#\1/' /etc/ssh/sshd_config

@@ -1,0 +1,18 @@
+name: "apply Harvester sshd_config"
+stages:
+   initramfs:
+     - name: "clear original config"
+       commands:
+       - |
+         sed -i 's/^\([^#]*PermitRootLogin.*\)/#\1/' /etc/ssh/sshd_config
+         sed -i 's/^\([^#]*LoginGraceTime.*\)/#\1/' /etc/ssh/sshd_config
+         sed -i 's/^\([^#]*AllowGroups.*\)/#\1/' /etc/ssh/sshd_config
+     - name: "append config"
+       commands:
+       - |
+         cat <<EOF >> /etc/ssh/sshd_config
+         ### Harvester Config
+         PermitRootLogin no
+         LoginGraceTime 60
+         AllowGroups admin
+         EOF

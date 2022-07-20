@@ -12,6 +12,7 @@ stages:
          sed -i 's/^\([^#]*X11Forwarding.*\)/#\1/' /etc/ssh/sshd_config
          sed -i 's/^\([^#]*AllowTcpForwarding.*\)/#\1/' /etc/ssh/sshd_config
          sed -i 's/^\([^#]*MaxAuthTries.*\)/#\1/' /etc/ssh/sshd_config
+         sed -i 's/^\([^#]*Subsystem.*sftp\)/#\1/' /etc/ssh/sshd_config
      - name: "append config"
        commands:
        - |

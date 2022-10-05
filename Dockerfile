@@ -34,5 +34,5 @@ RUN cat /tmp/os-release >> /usr/lib/os-release && rm -f /tmp/os-release
 RUN rm -f /etc/cos/config
 
 # Download rancherd
-ARG RANCHERD_VERSION=v0.0.1-alpha13-harvester1
-RUN curl -o /usr/bin/rancherd -sfL "https://github.com/harvester/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
+ARG RANCHERD_VERSION=v0.0.1-alpha14
+RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd

@@ -1,5 +1,8 @@
+FROM quay.io/costoolkit/releases-green:luet-toolchain-0.21.2 AS luet
+
 FROM registry.opensuse.org/isv/rancher/harvester/baseos/main/baseos:latest AS base
 
+COPY --from=luet /usr/bin/luet /usr/bin/luet
 COPY files/etc/luet/luet.yaml /etc/luet/luet.yaml
 
 # Necessary for luet to run
@@ -36,3 +39,7 @@ RUN rm -f /etc/cos/config
 # Download rancherd
 ARG RANCHERD_VERSION=v0.0.1-alpha14
 RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
+
+# k9s
+RUN mkdir -p /tmp/k9s && curl -o /tmp/k9s/k9s.tar.gz -sfL https://github.com/derailed/k9s/releases/download/v0.26.7/k9s_Linux_x86_64.tar.gz && tar xzf /tmp/k9s/k9s.tar.gz -C /tmp/k9s && mv /tmp/k9s/k9s /usr/bin && chmod +x /usr/bin/k9s && rm -rf /tmp/k9s
+

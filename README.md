@@ -40,3 +40,17 @@ After you pinned the repository, run command `luet repo update`, and you will se
 ```
 
 If two revision numbers are identical, it means you have pinned the correct repository version.
+
+## Build on local
+
+On the os2 folder, use the following command
+``` bash
+ # ./scripts/build
+```
+
+You will see the following result.
+``` text
+Successfully tagged rancher/harvester-os:20221230-b655b96-dirty
+```
+
+The `rancher/harvester-os:20221230-b655b96-dirty` is the local image you want.

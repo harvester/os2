@@ -1,6 +1,6 @@
 FROM quay.io/costoolkit/releases-teal:luet-toolchain-0.33.0-2 AS luet
 
-FROM registry.opensuse.org/isv/rancher/harvester/baseos/main/baseos:latest AS base
+FROM registry.opensuse.org/isv/rancher/harvester/baseos53/main/baseos:latest AS base
 
 COPY --from=luet /usr/bin/luet /usr/bin/luet
 COPY files/etc/luet/luet.yaml /etc/luet/luet.yaml

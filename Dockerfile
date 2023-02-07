@@ -20,7 +20,6 @@ RUN luet install -y \
     selinux/rancher \
     utils/nerdctl \
     toolchain/yq \
-    utils/k9s \
     toolchain/elemental-cli
 
 # Create the folder for journald persistent data

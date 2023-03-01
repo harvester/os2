@@ -10,7 +10,6 @@ RUN mkdir -p /run/lock
 
 ARG CACHEBUST
 RUN luet install -y \
-    toolchain/yip \
     system/cos-setup \
     system/immutable-rootfs \
     system/grub2-config \
@@ -18,7 +17,6 @@ RUN luet install -y \
     system/grub2-artifacts \
     selinux/k3s \
     selinux/rancher \
-    utils/nerdctl \
     toolchain/yq \
     toolchain/elemental-cli
 
@@ -42,3 +40,13 @@ RUN rm -f /etc/cos/config
 # Download rancherd
 ARG RANCHERD_VERSION=v0.0.1-alpha14
 RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
+
+# Download virtctl
+ARG VIRTCTL_VERSION=v0.55.2
+RUN curl -o /usr/bin/virtctl -sfL "https://github.com/kubevirt/kubevirt/releases/download/${VIRTCTL_VERSION}/virtctl-${VIRTCTL_VERSION}-linux-amd64" && chmod 0755 /usr/bin/virtctl
+
+# Download nerdctl
+ARG NERDCTL_VERSION=1.2.1
+RUN curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-amd64.tar.gz"
+RUN tar -zxvf nerdctl-bin.tar.gz && mv nerdctl /usr/bin/
+RUN rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootless.sh

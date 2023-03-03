@@ -45,6 +45,10 @@ RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases
 ARG VIRTCTL_VERSION=v0.55.2
 RUN curl -o /usr/bin/virtctl -sfL "https://github.com/kubevirt/kubevirt/releases/download/${VIRTCTL_VERSION}/virtctl-${VIRTCTL_VERSION}-linux-amd64" && chmod 0755 /usr/bin/virtctl
 
+# Download yip
+ARG YIP_VERSION=v1.0.0
+RUN curl -o /usr/bin/yip -sfL "https://github.com/mudler/yip/releases/download/${YIP_VERSION}/yip-${YIP_VERSION}-linux-amd64" && chmod 0755 /usr/bin/yip
+
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1
 RUN curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-amd64.tar.gz"

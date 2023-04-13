@@ -1,0 +1,87 @@
+on:
+  push:
+    tags:
+    - 202*
+
+env:
+  IMAGE_NAME: rancher/harvester-os:${{ github.ref_name }}
+
+jobs:
+  generate-image-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull new image
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 1
+          max_attempts: 10
+          retry_wait_seconds: 60
+          command: 'docker pull ${{ env.IMAGE_NAME }}'
+      - name: Install container-diff
+        run: |
+          sudo curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          sudo chmod +x /usr/bin/container-diff
+      - name: Get current OS image from installer
+        run: |
+          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/master/scripts/package-harvester-os -o /tmp/package-harvester-os
+          grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
+      - name: Run container-diff
+        run: |
+          source /tmp/tmp-env
+          docker pull $BASE_OS_IMAGE
+          echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
+          sudo container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --type=file --output=diff-result.txt
+          cat diff-result.txt
+      - name: Upload container-diff result
+        uses: actions/upload-artifact@v3
+        with:
+          name: diff-result
+          path: diff-result.txt
+  create-installer-pr:
+    runs-on: ubuntu-latest
+    needs: generate-image-diff
+    steps:
+      - name: Download container-diff result
+        uses: actions/download-artifact@v3
+        with:
+          name: diff-result
+      - name: Read diff result
+        id: read
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./diff-result.txt
+      - name: Remove unused files
+        run: rm diff-result.txt
+      - name: Clone harvester-installer repo
+        uses: actions/checkout@v3
+        with:
+          repository: harvester/harvester-installer
+      - name: Update os image
+        run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
+      - name: Create installer PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          commit-message: Bump OS ${{ github.ref_name }}
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: bump-os-${{ github.ref_name }}
+          delete-branch: true
+          title: 'Bump OS ${{ github.ref_name }}'
+          draft: false
+          body: |
+            **Problem:**
+            Harvester base OS needs to update.
+
+            **Solution:**
+            Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ github.ref_name }}).
+
+            **Related Issue:**
+
+            **Test plan:**
+
+            **More info:**
+            ```
+            ${{ steps.read.outputs.content }}
+            ```

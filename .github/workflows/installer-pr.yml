@@ -9,6 +9,8 @@ env:
 jobs:
   generate-image-diff:
     runs-on: ubuntu-latest
+    container:
+      image: registry.suse.com/bci/bci-base:15.4
     steps:
       - name: Pull new image
         uses: nick-fields/retry@v2
@@ -19,8 +21,8 @@ jobs:
           command: 'docker pull ${{ env.IMAGE_NAME }}'
       - name: Install container-diff
         run: |
-          sudo curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
-          sudo chmod +x /usr/bin/container-diff
+          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          chmod +x /usr/bin/container-diff
       - name: Get current OS image from installer
         run: |
           curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/master/scripts/package-harvester-os -o /tmp/package-harvester-os
@@ -30,7 +32,7 @@ jobs:
           source /tmp/tmp-env
           docker pull $BASE_OS_IMAGE
           echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
-          sudo container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=diff-result.txt
+          container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=diff-result.txt
           cat diff-result.txt
       - name: Upload container-diff result
         uses: actions/upload-artifact@v3

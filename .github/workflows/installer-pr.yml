@@ -30,7 +30,7 @@ jobs:
           source /tmp/tmp-env
           docker pull $BASE_OS_IMAGE
           echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
-          sudo container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --type=file --output=diff-result.txt
+          sudo container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=diff-result.txt
           cat diff-result.txt
       - name: Upload container-diff result
         uses: actions/upload-artifact@v3

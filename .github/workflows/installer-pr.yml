@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-    - 202*
+    - v*
 
 env:
   IMAGE_NAME: rancher/harvester-os:${{ github.ref_name }}

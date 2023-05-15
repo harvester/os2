@@ -12,6 +12,8 @@ jobs:
     container:
       image: registry.suse.com/bci/bci-base:15.4
     steps:
+      - name: Install docker
+        run: zypper ref && zypper -n install docker
       - name: Pull new image
         uses: nick-fields/retry@v2
         with:

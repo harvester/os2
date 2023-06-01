@@ -2,6 +2,14 @@
 
 The base OS for Harvester, powered by cOS-toolkit.
 
+# Branch
+
+- **sle-micro**: means the development branch.
+- **harvester-v1.2.x**: means the v1.2.x stable branch.
+- **harvester-v1.1.x**: means the v1.1.x stable branch.
+
+Mostly we will develop on the *sle-micro* branch and backport what we needed to the stable branch.
+
 # How-Tos
 
 ## Update luet repository

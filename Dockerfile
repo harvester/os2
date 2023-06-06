@@ -11,14 +11,9 @@ RUN mkdir -p /run/lock
 ARG CACHEBUST
 RUN luet install -y \
     system/cos-setup \
-    system/immutable-rootfs \
-    system/grub2-config \
-    system/grub2-efi-image \
-    system/grub2-artifacts \
     selinux/k3s \
     selinux/rancher \
-    toolchain/yq \
-    toolchain/elemental-cli
+    toolchain/yq
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal
@@ -27,8 +22,14 @@ RUN mkdir -p /var/log/journal
 RUN mkdir -p /usr/local/cloud-config
 RUN mkdir -p /oem
 
+# Enable /tmp to be on tmpfs
+RUN cp /usr/share/systemd/tmp.mount /etc/systemd/system
+
 COPY files/ /
 RUN mkinitrd
+
+# remove unused 05_network.yaml
+RUN rm -f /system/oem/05_network.yaml
 
 # Append more options
 COPY os-release /tmp

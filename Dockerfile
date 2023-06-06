@@ -11,14 +11,9 @@ RUN mkdir -p /run/lock
 ARG CACHEBUST
 RUN luet install -y \
     system/cos-setup \
-    system/immutable-rootfs \
-    system/grub2-config \
-    system/grub2-efi-image \
-    system/grub2-artifacts \
     selinux/k3s \
     selinux/rancher \
-    toolchain/yq \
-    toolchain/elemental-cli
+    toolchain/yq
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal
@@ -27,8 +22,14 @@ RUN mkdir -p /var/log/journal
 RUN mkdir -p /usr/local/cloud-config
 RUN mkdir -p /oem
 
+# Enable /tmp to be on tmpfs
+RUN cp /usr/share/systemd/tmp.mount /etc/systemd/system
+
 COPY files/ /
 RUN mkinitrd
+
+# remove unused 05_network.yaml
+RUN rm -f /system/oem/05_network.yaml
 
 # Append more options
 COPY os-release /tmp
@@ -40,14 +41,6 @@ RUN rm -f /etc/cos/config
 # Download rancherd
 ARG RANCHERD_VERSION=v0.1.0-rc2
 RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
-
-# Download virtctl
-ARG VIRTCTL_VERSION=v0.55.2
-RUN curl -o /usr/bin/virtctl -sfL "https://github.com/kubevirt/kubevirt/releases/download/${VIRTCTL_VERSION}/virtctl-${VIRTCTL_VERSION}-linux-amd64" && chmod 0755 /usr/bin/virtctl
-
-# Download yip
-ARG YIP_VERSION=v1.0.0
-RUN curl -o /usr/bin/yip -sfL "https://github.com/mudler/yip/releases/download/${YIP_VERSION}/yip-${YIP_VERSION}-linux-amd64" && chmod 0755 /usr/bin/yip
 
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1

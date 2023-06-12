@@ -1,6 +1,6 @@
 FROM quay.io/costoolkit/releases-teal:luet-toolchain-0.33.0-2 AS luet
 
-FROM registry.opensuse.org/isv/rancher/harvester/baseos53/main/baseos:latest AS base
+FROM registry.opensuse.org/isv/rancher/harvester/os/v1.2/main/baseos:latest AS base
 
 COPY --from=luet /usr/bin/luet /usr/bin/luet
 COPY files/etc/luet/luet.yaml /etc/luet/luet.yaml
@@ -40,14 +40,6 @@ RUN rm -f /etc/cos/config
 # Download rancherd
 ARG RANCHERD_VERSION=v0.1.0-rc2
 RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd
-
-# Download virtctl
-ARG VIRTCTL_VERSION=v0.55.2
-RUN curl -o /usr/bin/virtctl -sfL "https://github.com/kubevirt/kubevirt/releases/download/${VIRTCTL_VERSION}/virtctl-${VIRTCTL_VERSION}-linux-amd64" && chmod 0755 /usr/bin/virtctl
-
-# Download yip
-ARG YIP_VERSION=v1.0.0
-RUN curl -o /usr/bin/yip -sfL "https://github.com/mudler/yip/releases/download/${YIP_VERSION}/yip-${YIP_VERSION}-linux-amd64" && chmod 0755 /usr/bin/yip
 
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1

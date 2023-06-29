@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: generate-image-diff
     steps:
-    - uses: jungwinter/split@v2
+      - uses: jungwinter/split@v2
         id: spliter
         with:
           msg: ${{ github.ref_name }}

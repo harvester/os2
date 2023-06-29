@@ -74,6 +74,7 @@ steps:
       - refs/heads/sle-micro
     event:
       - push
+      - cron
 
 - name: docker-publish
   image: plugins/docker

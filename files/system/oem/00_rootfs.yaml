@@ -39,7 +39,7 @@ stages:
       environment:
         VOLUMES: "LABEL=COS_OEM:/oem"
         OVERLAY: "tmpfs:25%"
-    - if: 'grep -q root=LABEL=COS_ACTIVE /proc/cmdline && grep -q rd.cos.debugrw /proc/cmdline'
+    - if: 'grep -q root=LABEL=COS_STATE /proc/cmdline && grep -q rd.cos.debugrw /proc/cmdline'
       name: "Layout configuration for debugrw"
       environment_file: /run/cos/cos-layout.env
       environment:

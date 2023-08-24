@@ -12,6 +12,11 @@ jobs:
     container:
       image: registry.suse.com/bci/bci-base:15.4
     steps:
+      - uses: jungwinter/split@v2
+        id: spliter
+        with:
+          msg: ${{ github.ref_name }}
+          separator: '-'
       - name: Install docker
         run: zypper ref && zypper -n install docker
       - name: Pull new image
@@ -27,7 +32,7 @@ jobs:
           chmod +x /usr/bin/container-diff
       - name: Get current OS image from installer
         run: |
-          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/master/scripts/package-harvester-os -o /tmp/package-harvester-os
+          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/${{ steps.spliter.outputs._0 }}/scripts/package-harvester-os -o /tmp/package-harvester-os
           grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
       - name: Run container-diff
         run: |

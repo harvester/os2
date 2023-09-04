@@ -25,4 +25,5 @@ stages:
          X11Forwarding no
          AllowTcpForwarding no
          MaxAuthTries 3
+         Include /etc/ssh/sshd_config.d/*.conf
          EOF

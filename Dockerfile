@@ -1,19 +1,9 @@
-FROM quay.io/costoolkit/releases-teal:luet-toolchain-0.33.0-2 AS luet
-
 FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos:latest AS base
 
-COPY --from=luet /usr/bin/luet /usr/bin/luet
-COPY files/etc/luet/luet.yaml /etc/luet/luet.yaml
-
-# Necessary for luet to run
-RUN mkdir -p /run/lock
-
 ARG CACHEBUST
-RUN luet install -y \
-    system/cos-setup \
-    selinux/k3s \
-    selinux/rancher \
-    toolchain/yq
+
+# elemental init first
+RUN elemental init --force
 
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal
@@ -26,7 +16,6 @@ RUN mkdir -p /oem
 RUN cp /usr/share/systemd/tmp.mount /etc/systemd/system
 
 COPY files/ /
-RUN mkinitrd
 
 # remove unused 05_network.yaml
 RUN rm -f /system/oem/05_network.yaml

@@ -37,6 +37,12 @@ RUN cat /tmp/os-release >> /usr/lib/os-release && rm -f /tmp/os-release
 # Remove /etc/cos/config to use default values
 RUN rm -f /etc/cos/config
 
+# patch udev, we need to make sure the iso root first priority for installation
+# related to
+# - https://github.com/systemd/systemd/pull/28481
+# - https://github.com/harvester/harvester/issues/4851
+RUN sed -i 's/^\([^#]*iso9660.*\)/#\1/' /usr/lib/udev/rules.d/60-persistent-storage.rules
+
 # Download rancherd
 ARG RANCHERD_VERSION=v0.0.1-alpha14
 RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-amd64" && chmod 0755 /usr/bin/rancherd

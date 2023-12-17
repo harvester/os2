@@ -1,0 +1,7 @@
+name: "apply Harvester lvm config"
+stages:
+   initramfs:
+     - name: "patch lvm config (add gloabl_filter)"
+       commands:
+       - |
+        sed -i 's/^devices.*/&\n\tglobal_filter = [ "r|.*\/|" ]/' /etc/lvm/lvm.conf

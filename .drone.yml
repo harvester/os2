@@ -7,89 +7,255 @@ platform:
   arch: amd64
 
 steps:
-- name: build
-  image: alpine:3.14
-  commands:
-  - apk add -U bash git gettext
-  - ./scripts/ci
+  - name: build
+    image: alpine:3.14
+    commands:
+      - apk add -U bash git gettext
+      - ./scripts/ci
 
-- name: docker-build
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "dev-head"
-    dry_run: true
-  when:
-    instance:
-      - drone-pr.rancher.io
-    branch:
-      - dev
+  - name: docker-build
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "dev-head-amd64"
+      dry_run: true
+    when:
+      instance:
+        - drone-pr.rancher.io
+      branch:
+        - dev
 
-- name: docker-publish-dev
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "dev-head"
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    instance:
-      - drone-publish.rancher.io
-    ref:
-      - refs/heads/dev
-    event:
-      - push
+  - name: docker-publish-dev
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "dev-head-amd64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/dev
+      event:
+        - push
 
-- name: docker-build-sle-micro
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "sle-micro-head"
-    dry_run: true
-  when:
-    instance:
-      - drone-pr.rancher.io
-    branch:
-      - sle-micro
+  - name: docker-build-sle-micro
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "sle-micro-head-amd64"
+      dry_run: true
+    when:
+      instance:
+        - drone-pr.rancher.io
+      branch:
+        - sle-micro
 
-- name: docker-publish-sle-micro
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "sle-micro-head"
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    instance:
-      - drone-publish.rancher.io
-    ref:
-      - refs/heads/sle-micro
-    event:
-      - push
-      - cron
+  - name: docker-publish-sle-micro
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "sle-micro-head-amd64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/sle-micro
+      event:
+        - push
+        - cron
 
-- name: docker-publish
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "${DRONE_TAG}"
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    instance:
-    - drone-publish.rancher.io
-    ref:
-    - refs/tags/*
-    event:
-    - tag
+  - name: docker-publish
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "${DRONE_TAG}-amd64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/tags/*
+      event:
+        - tag
+---
+kind: pipeline
+name: arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+steps:
+  - name: build
+    image: alpine:3.14
+    commands:
+      - apk add -U bash git gettext
+      - ./scripts/ci
+
+  - name: docker-build
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "dev-head-arm64"
+      dry_run: true
+    when:
+      instance:
+        - drone-pr.rancher.io
+      branch:
+        - dev
+
+  - name: docker-publish-dev
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "dev-head-arm64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/dev
+      event:
+        - push
+
+  - name: docker-build-sle-micro
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "sle-micro-head-arm64"
+      dry_run: true
+    when:
+      instance:
+        - drone-pr.rancher.io
+      branch:
+        - sle-micro
+
+  - name: docker-publish-sle-micro
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "sle-micro-head-arm64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/sle-micro
+      event:
+        - push
+        - cron
+
+  - name: docker-publish
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: "rancher/harvester-os"
+      tag: "${DRONE_TAG}-arm64"
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/tags/*
+      event:
+        - tag
+---
+kind: pipeline
+name: manifest
+
+steps:
+  - name: push-dev-head
+    image: plugins/manifest
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      target: "rancher/harvester-os:dev-head"
+      template: "rancher/harvester-os:dev-head-ARCH"
+      ignore_missing: true
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/dev
+      event:
+        - push
+
+  - name: push-tag
+    image: plugins/manifest
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      target: "rancher/harvester-os:${DRONE_TAG}"
+      template: "rancher/harvester-os:${DRONE_TAG}-ARCH"
+      ignore_missing: true
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/tags/*
+      event:
+        - tag
+
+  - name: push-sle-micro-head
+    image: plugins/manifest
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      target: "rancher/harvester-os:sle-micro"
+      template: "rancher/harvester-os:sle-micro-head-ARCH"
+      ignore_missing: true
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    when:
+      instance:
+        - drone-publish.rancher.io
+      ref:
+        - refs/heads/sle-micro
+      event:
+        - push
+        - cron
+depends_on:
+  - amd64
+  - arm64

@@ -2,6 +2,7 @@ FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos:latest AS ba
 
 ARG CACHEBUST
 
+ARG ARCH=amd64
 # elemental init first
 RUN elemental init --force
 
@@ -33,11 +34,6 @@ RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases
 
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1
-RUN ARCH=$(uname -a); \
-    if [ "${ARCH}" == "x86_64" ]; then \
-    curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-amd64.tar.gz"; \
-    else \
-    curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-arm64.tar.gz"; \
-    fi
+RUN curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH}.tar.gz"
 RUN tar -zxvf nerdctl-bin.tar.gz && mv nerdctl /usr/bin/
 RUN rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootless.sh

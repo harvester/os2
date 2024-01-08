@@ -262,7 +262,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      target: "rancher/harvester-os:sle-micro"
+      target: "rancher/harvester-os:sle-micro-head"
       template: "rancher/harvester-os:sle-micro-head-ARCH"
       ignore_missing: true
       platforms:

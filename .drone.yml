@@ -18,37 +18,6 @@ steps:
   settings:
     dockerfile: Dockerfile
     repo: "rancher/harvester-os"
-    tag: "dev-head"
-    dry_run: true
-  when:
-    instance:
-      - drone-pr.rancher.io
-    branch:
-      - dev
-
-- name: docker-publish-dev
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
-    tag: "dev-head"
-    username:
-      from_secret: docker_username
-    password:
-      from_secret: docker_password
-  when:
-    instance:
-      - drone-publish.rancher.io
-    ref:
-      - refs/heads/dev
-    event:
-      - push
-
-- name: docker-build-sle-micro
-  image: plugins/docker
-  settings:
-    dockerfile: Dockerfile
-    repo: "rancher/harvester-os"
     tag: "sle-micro-head"
     dry_run: true
   when:
@@ -56,8 +25,9 @@ steps:
       - drone-pr.rancher.io
     branch:
       - sle-micro
+      - harvester-*
 
-- name: docker-publish-sle-micro
+- name: docker-publish
   image: plugins/docker
   settings:
     dockerfile: Dockerfile
@@ -72,10 +42,11 @@ steps:
       - drone-publish.rancher.io
     ref:
       - refs/heads/sle-micro
+      - refs/heads/harvester-*
     event:
       - push
 
-- name: docker-publish
+- name: docker-publish-tag
   image: plugins/docker
   settings:
     dockerfile: Dockerfile

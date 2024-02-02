@@ -18,41 +18,6 @@ steps:
     settings:
       dockerfile: Dockerfile
       repo: "rancher/harvester-os"
-      tag: "dev-head-amd64"
-      dry_run: true
-      build_args:
-        - ARCH=amd64
-    when:
-      instance:
-        - drone-pr.rancher.io
-      branch:
-        - dev
-
-  - name: docker-publish-dev
-    image: plugins/docker
-    settings:
-      dockerfile: Dockerfile
-      repo: "rancher/harvester-os"
-      tag: "dev-head-amd64"
-      build_args:
-        - ARCH=amd64
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
-  - name: docker-build-sle-micro
-    image: plugins/docker
-    settings:
-      dockerfile: Dockerfile
-      repo: "rancher/harvester-os"
       tag: "sle-micro-head-amd64"
       dry_run: true
       build_args:
@@ -62,8 +27,9 @@ steps:
         - drone-pr.rancher.io
       branch:
         - sle-micro
+        - harvester-*
 
-  - name: docker-publish-sle-micro
+  - name: docker-publish
     image: plugins/docker
     settings:
       dockerfile: Dockerfile
@@ -80,11 +46,12 @@ steps:
         - drone-publish.rancher.io
       ref:
         - refs/heads/sle-micro
+        - refs/heads/harvester-*
       event:
         - push
         - cron
 
-  - name: docker-publish
+  - name: docker-publish-tag
     image: plugins/docker
     settings:
       dockerfile: Dockerfile
@@ -123,41 +90,6 @@ steps:
     settings:
       dockerfile: Dockerfile
       repo: "rancher/harvester-os"
-      tag: "dev-head-arm64"
-      dry_run: true
-      build_args:
-        - ARCH=arm64
-    when:
-      instance:
-        - drone-pr.rancher.io
-      branch:
-        - dev
-
-  - name: docker-publish-dev
-    image: plugins/docker
-    settings:
-      dockerfile: Dockerfile
-      repo: "rancher/harvester-os"
-      tag: "dev-head-arm64"
-      build_args:
-        - ARCH=arm64
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
-  - name: docker-build-sle-micro
-    image: plugins/docker
-    settings:
-      dockerfile: Dockerfile
-      repo: "rancher/harvester-os"
       tag: "sle-micro-head-arm64"
       dry_run: true
       build_args:
@@ -167,8 +99,9 @@ steps:
         - drone-pr.rancher.io
       branch:
         - sle-micro
+        - harvester-*
 
-  - name: docker-publish-sle-micro
+  - name: docker-publish
     image: plugins/docker
     settings:
       dockerfile: Dockerfile
@@ -185,11 +118,12 @@ steps:
         - drone-publish.rancher.io
       ref:
         - refs/heads/sle-micro
+        - refs/heads/harvester-*
       event:
         - push
         - cron
 
-  - name: docker-publish
+  - name: docker-publish-tag
     image: plugins/docker
     settings:
       dockerfile: Dockerfile
@@ -213,27 +147,6 @@ kind: pipeline
 name: manifest
 
 steps:
-  - name: push-dev-head
-    image: plugins/manifest
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      target: "rancher/harvester-os:dev-head"
-      template: "rancher/harvester-os:dev-head-ARCH"
-      ignore_missing: true
-      platforms:
-        - linux/amd64
-        - linux/arm64
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
   - name: push-tag
     image: plugins/manifest
     settings:
@@ -289,43 +202,6 @@ platform:
   arch: amd64
 
 steps:
-  - name: docker-build
-    image: plugins/docker
-    settings:
-      dockerfile: nvidia-driver-toolkit/Dockerfile
-      repo: "rancher/harvester-nvidia-driver-toolkit"
-      tag: "dev-head-amd64"
-      dry_run: true
-      context: nvidia-driver-toolkit
-      build_args:
-        - ARCH=amd64
-    when:
-      instance:
-        - drone-pr.rancher.io
-      branch:
-        - dev
-
-  - name: docker-publish-dev
-    image: plugins/docker
-    settings:
-      dockerfile: nvidia-driver-toolkit/Dockerfile
-      repo: "rancher/harvester-nvidia-driver-toolkit"
-      tag: "dev-head-amd64"
-      context: nvidia-driver-toolkit
-      build_args:
-        - ARCH=amd64
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
   - name: docker-build-sle-micro
     image: plugins/docker
     settings:
@@ -393,43 +269,6 @@ platform:
   arch: arm64
 
 steps:
-  - name: docker-build
-    image: plugins/docker
-    settings:
-      dockerfile: nvidia-driver-toolkit/Dockerfile
-      repo: "rancher/harvester-nvidia-driver-toolkit"
-      tag: "dev-head-arm64"
-      context: nvidia-driver-toolkit
-      dry_run: true
-      build_args:
-        - ARCH=arm64
-    when:
-      instance:
-        - drone-pr.rancher.io
-      branch:
-        - dev
-
-  - name: docker-publish-dev
-    image: plugins/docker
-    settings:
-      dockerfile: nvidia-driver-toolkit/Dockerfile
-      repo: "rancher/harvester-nvidia-driver-toolkit"
-      tag: "dev-head-arm64"
-      context: nvidia-driver-toolkit
-      build_args:
-        - ARCH=arm64
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
   - name: docker-build-sle-micro
     image: plugins/docker
     settings:
@@ -493,27 +332,6 @@ kind: pipeline
 name: nvidia-driver-toolkit-manifest
 
 steps:
-  - name: push-dev-head
-    image: plugins/manifest
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      target: "rancher/harvester-nvidia-driver-toolkit:dev-head"
-      template: "rancher/harvester-nvidia-driver-toolkit:dev-head-ARCH"
-      ignore_missing: true
-      platforms:
-        - linux/amd64
-        - linux/arm64
-    when:
-      instance:
-        - drone-publish.rancher.io
-      ref:
-        - refs/heads/dev
-      event:
-        - push
-
   - name: push-tag
     image: plugins/manifest
     settings:

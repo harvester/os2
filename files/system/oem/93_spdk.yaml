@@ -1,0 +1,12 @@
+name: "Runtime SPDK Prerequisites"
+stages:
+  initramfs:
+  - name: "enable hugepage"
+    sysctl:
+      vm.nr_hugepages: "1024"
+  - name: "load related kernel module"
+    commands:
+      - |
+        modprobe vfio_pci
+        modprobe uio_pci_generic
+        modprobe nvme_tcp

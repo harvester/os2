@@ -1,4 +1,4 @@
-FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos:latest AS base
+FROM registry.opensuse.org/isv/rancher/harvester/os/v1.3/main/baseos:latest AS base
 
 ARG CACHEBUST
 

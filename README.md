@@ -5,6 +5,7 @@ The base OS for Harvester, powered by cOS-toolkit.
 # Branch
 
 - **sle-micro**: means the development branch.
+- **harvester-v1.3.x**: means the v1.3.x stable branch.
 - **harvester-v1.2.x**: means the v1.2.x stable branch.
 - **harvester-v1.1.x**: means the v1.1.x stable branch.
 

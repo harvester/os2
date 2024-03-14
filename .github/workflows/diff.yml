@@ -1,0 +1,125 @@
+name: Package Differences
+
+on:
+  schedule:
+    - cron: "0 5 * * *"
+
+env:
+  OS_IMAGE_v1_3_x: registry.opensuse.org/isv/rancher/harvester/os/v1.3/main/baseos:latest
+  OS_IMAGE_v1_2_x: registry.opensuse.org/isv/rancher/harvester/os/v1.2/main/baseos:latest
+
+jobs:
+  get-all-releases:
+    runs-on: ubuntu-latest
+    outputs:
+      releaseName_v1_3_x: ${{ steps.get_release_v1_3_x.outputs.releaseName }}
+      releaseName_v1_2_x: ${{ steps.get_release_v1_2_x.outputs.releaseName }}
+
+    steps:
+      - name: Get all releases
+        id: get_all_releases
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const response = await github.rest.repos.listReleases({
+            owner: context.repo.owner,
+            repo: context.repo.repo
+            });
+            
+            const releases = response.data;
+            core.setOutput('allReleases', releases);
+      - name: Get v1.3 latest release
+        id: get_release_v1_3_x
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const releases = ${{ steps.get_all_releases.outputs.allReleases }};
+            const releaseNamePrefix = "v1.3";
+            const foundRelease = releases.startsWith(release => release.name.includes(releaseNamePrefix));
+
+            if (foundRelease) {
+              const releaseName = foundRelease.name;
+              core.setOutput('releaseName', releaseName);
+            }
+      - name: Get v1.2 latest release
+        id: get_release_v1_2_x
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const releases = ${{ steps.get_all_releases.outputs.allReleases }};
+            const releaseNamePrefix = "v1.2";
+            const foundRelease = releases.startsWith(release => release.name.includes(releaseNamePrefix));
+
+            if (foundRelease) {
+              const releaseName = foundRelease.name;
+              core.setOutput('releaseName', releaseName);
+            }
+
+  fetch-v1-3-x-diff:   
+    needs: get-all-releases
+    runs-on: ubuntu-latest
+    container:
+      image: registry.suse.com/bci/bci-base:15.4
+
+    steps:
+      - name: Set osImage
+        id: set_os_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_3_x }}`;
+            core.setOutput('osImage', osImage);
+      - name: Install docker
+        run: zypper ref && zypper -n install docker
+      - name: Install container-diff
+        run: |
+          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          chmod +x /usr/bin/container-diff
+      - name: Pull current v1.3.x os image
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 1
+          max_attempts: 10
+          retry_wait_seconds: 60
+          command: 'docker pull ${{ steps.set_os_image.outputs.osImage }}'
+      - name: Run container-diff for v1.3.x
+        run: |
+          docker pull ${{ env.OS_IMAGE_v1_3_x }}
+          echo "Diff ${{ env.OS_IMAGE_v1_3_x }} with ${{ steps.set_os_image.outputs.osImage }}..."
+          container-diff diff daemon://docker.io/${{ steps.set_os_image.outputs.osImage }} daemon://docker.io/${{ env.OS_IMAGE_v1_3_x }} --type=rpm --output=diff-result.txt
+          cat diff-result.txt
+
+  fetch-v1-2-x-diff:   
+    needs: get-all-releases
+    runs-on: ubuntu-latest
+    container:
+      image: registry.suse.com/bci/bci-base:15.4
+
+    steps:
+      - name: Set osImage
+        id: set_os_image
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_2_x }}`;
+            core.setOutput('osImage', osImage);
+      - name: Install docker
+        run: zypper ref && zypper -n install docker
+      - name: Install container-diff
+        run: |
+          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          chmod +x /usr/bin/container-diff
+      - name: Pull current v1.2.x os image
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 1
+          max_attempts: 10
+          retry_wait_seconds: 60
+          command: 'docker pull ${{ steps.set_os_image.outputs.osImage }}'
+      - name: Run container-diff for v1.2.x
+        run: |
+          docker pull ${{ env.OS_IMAGE_v1_2_x }}
+          echo "Diff ${{ env.OS_IMAGE_v1_2_x }} with ${{ steps.set_os_image.outputs.osImage }}..."
+          container-diff diff daemon://docker.io/${{ steps.set_os_image.outputs.osImage }} daemon://docker.io/${{ env.OS_IMAGE_v1_2_x }} --type=rpm --output=diff-result.txt
+          cat diff-result.txt

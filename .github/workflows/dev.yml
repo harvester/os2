@@ -1,0 +1,17 @@
+name: Dev/Daily Build and Publish
+
+on:
+  push:
+    branches:
+    - sle-micro
+  schedule:
+    - cron: "0 1 * * *"
+
+
+jobs:
+  build-for-dev:
+    uses: ./.github/workflows/factory.yml
+    with:
+      tag: ${{ github.ref_name }}-head
+      push: yes
+    secrets: inherit

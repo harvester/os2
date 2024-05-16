@@ -1,0 +1,56 @@
+on:
+  workflow_call:
+    inputs:
+      tag:
+        required: true
+        type: string
+      push:
+        required: true
+        type: boolean
+
+env:
+  repo: "rancher"
+  OSImageName: "harvester-os"
+  NVDriverToolkitImageName: "harvester-nvidia-driver-toolkit"
+
+jobs:
+  dapper-build-for-os:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3 
+
+    - name: generate os-release
+      run: bash scripts/ci
+
+    - name: Docker Build (OS Image)
+      uses: docker/build-push-action@v5
+      with:
+        provenance: false
+        context: .
+        platforms: linux/amd64,linux/arm64
+        file: Dockerfile
+        push: ${{ inputs.push }}
+        tags: ${{ env.repo }}/${{ env.OSImageName }}:${{ inputs.tag }}
+
+    - name: prepare entrypoint script for NV-driver-toolkits Image
+      run: cp nvidia-driver-toolkit/entrypoint.sh .
+
+    - name: Docker Build (NV-driver-toolkits Image)
+      uses: docker/build-push-action@v5
+      with:
+        provenance: false
+        context: .
+        platforms: linux/amd64,linux/arm64
+        file: nvidia-driver-toolkit/Dockerfile
+        push: ${{ inputs.push }}
+        tags: ${{ env.repo }}/${{ env.NVDriverToolkitImageName }}:${{ inputs.tag }}

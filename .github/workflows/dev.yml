@@ -13,5 +13,5 @@ jobs:
     uses: ./.github/workflows/factory.yml
     with:
       tag: ${{ github.ref_name }}-head
-      push: yes
+      push: true
     secrets: inherit

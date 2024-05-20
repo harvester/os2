@@ -2,7 +2,6 @@ FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos:latest AS ba
 
 ARG CACHEBUST
 
-ARG ARCH=amd64
 # elemental init first
 RUN elemental init --force
 
@@ -27,6 +26,15 @@ RUN cat /tmp/os-release >> /usr/lib/os-release && rm -f /tmp/os-release
 
 # Remove /etc/cos/config to use default values
 RUN rm -f /etc/cos/config
+
+ARG TARGETPLATFORM
+
+RUN if [ "$TARGETPLATFORM" != "linux/amd64" ] && [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
+    echo "Error: Unsupported TARGETPLATFORM: $TARGETPLATFORM" && \
+    exit 1; \
+    fi
+
+ENV ARCH=${TARGETPLATFORM#linux/}
 
 # Download rancherd
 ARG RANCHERD_VERSION=v0.2.0-rc1

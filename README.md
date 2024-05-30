@@ -1,4 +1,5 @@
 # Harvester Base OS
+[![Dev/Daily Build and Publish](https://github.com/harvester/os2/actions/workflows/dev.yml/badge.svg)](https://github.com/harvester/os2/actions/workflows/dev.yml)
 
 The base OS for Harvester, powered by cOS-toolkit.
 

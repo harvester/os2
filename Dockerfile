@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7.0
+
 FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos:latest AS base
 
 ARG CACHEBUST

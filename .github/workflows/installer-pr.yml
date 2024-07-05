@@ -73,9 +73,6 @@ jobs:
           ref: ${{ steps.spliter.outputs._0 }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
-      - name: Update nvidia driver toolkit tag
-        run: |
-          sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ github.ref_name }}\n/}" pkg/config/templates/rancherd-22-addons.yaml 
       - name: Create installer PR
         uses: peter-evans/create-pull-request@v5
         with:
@@ -103,7 +100,7 @@ jobs:
             ```
             ${{ steps.read.outputs.content }}
             ```
-  create-harvester-pr:
+  create-addon-pr:
     runs-on: ubuntu-latest
     needs: generate-image-diff
     steps:
@@ -112,15 +109,15 @@ jobs:
         with:
           msg: ${{ github.ref_name }}
           separator: '-'
-      - name: Clone harvester repo
+      - name: Clone Addons repo
         uses: actions/checkout@v3
         with:
-          repository: harvester/harvester
+          repository: harvester/addons
           ref: ${{ steps.spliter.outputs._0 }}
       - name: Update nvidia driver toolkit tag
         run: |
-          sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ github.ref_name }}\n/}" package/upgrade/addons/nvidia-driver-toolkit.yaml 
-      - name: Create harvester PR
+          sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ github.ref_name }}\n/}" pkg/templates/rancherd-22-addons.yaml
+      - name: Create Addons PR
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.BOT_TOKEN }}

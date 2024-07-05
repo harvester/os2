@@ -12,6 +12,11 @@ jobs:
     container:
       image: registry.suse.com/bci/bci-base:15.4
     steps:
+      - uses: jungwinter/split@v2
+        id: spliter
+        with:
+          msg: ${{ github.ref_name }}
+          separator: '-'
       - name: Install docker
         run: zypper ref && zypper -n install docker
       - name: Pull new image
@@ -27,7 +32,7 @@ jobs:
           chmod +x /usr/bin/container-diff
       - name: Get current OS image from installer
         run: |
-          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/master/scripts/package-harvester-os -o /tmp/package-harvester-os
+          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/${{ steps.spliter.outputs._0 }}/scripts/package-harvester-os -o /tmp/package-harvester-os
           grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
       - name: Run container-diff
         run: |
@@ -95,3 +100,42 @@ jobs:
             ```
             ${{ steps.read.outputs.content }}
             ```
+  create-addon-pr:
+    runs-on: ubuntu-latest
+    needs: generate-image-diff
+    steps:
+      - uses: jungwinter/split@v2
+        id: spliter
+        with:
+          msg: ${{ github.ref_name }}
+          separator: '-'
+      - name: Clone Addons repo
+        uses: actions/checkout@v3
+        with:
+          repository: harvester/addons
+          ref: ${{ steps.spliter.outputs._0 }}
+      - name: Update nvidia driver toolkit tag
+        run: |
+          sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ github.ref_name }}\n/}" pkg/templates/rancherd-22-addons.yaml
+      - name: Create Addons PR
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          commit-message: Bump nvidia-driver-toolkit ${{ github.ref_name }}
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+          signoff: false
+          branch: bump-nv-driver-${{ github.ref_name }}
+          delete-branch: true
+          title: 'Bump nvidia-driver-toolkit ${{ github.ref_name }}'
+          draft: false
+          body: |
+            **Problem:**
+            The nvidia driver toolkit needs to update.
+
+            **Solution:**
+            Bump nvidia driver toolkit image as related baseos [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ github.ref_name }}).
+
+            **Related Issue:**
+
+            **Test plan:**

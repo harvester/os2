@@ -13,3 +13,17 @@ echo "==============="
 echo "OS release info"
 echo "==============="
 cat os-release
+
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+if [[ ! $BRANCH_NAME =~ ^harvester- ]]; then
+    echo "Branch name does not start with 'harvester-' prefix, skip patching version."
+    return || exit 0
+fi
+echo "Patch target baseos version with branch name: $BRANCH_NAME"
+VERSION=$(echo "$BRANCH_NAME" | sed 's/harvester-//; s/\.x$//')
+# Update the Dockerfile with the new version
+cp Dockerfile Dockerfile.bak
+cp nvidia-driver-toolkit/Dockerfile nvidia-driver-toolkit/Dockerfile.bak
+sed -i "0,/dev/s//${VERSION}/" Dockerfile
+sed -i "0,/dev/s//${VERSION}/" nvidia-driver-toolkit/Dockerfile
+VERSION_PATCHED=true

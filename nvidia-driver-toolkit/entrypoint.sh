@@ -29,16 +29,6 @@ else
     echo "No DRIVER_LOCATION specified. skipping..."
 fi
 
-# update nvidia driver firmware search path
-# /run/nvidia/driver/lib/firmware is mount under /lib/firmware in the container 
-# by the daemonset manifests
-EXISTS=$(grep '/run/nvidia/driver/lib/firmware' /sys/module/firmware_class/parameters/path)
-if [ -z "${EXISTS}" ]
-then
-    echo "Adding firmware search path to /sys/module/firmware_class/parameters/path"
-    echo  '/run/nvidia/driver/lib/firmware' > /sys/module/firmware_class/parameters/path
-fi
-
 echo "running nvidia vgpud"
 create_dev_char_directory
 /usr/bin/nvidia-vgpud

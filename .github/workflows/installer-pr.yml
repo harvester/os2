@@ -80,7 +80,7 @@ jobs:
           commit-message: Bump OS ${{ github.ref_name }}
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          reviewers: bk201,tserong,Vicente-Cheng,ibrokethecloud
+          team-reviewers: os
           signoff: false
           branch: bump-os-${{ github.ref_name }}
           delete-branch: true
@@ -125,7 +125,7 @@ jobs:
           commit-message: Bump nvidia-driver-toolkit ${{ github.ref_name }}
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          reviewers: bk201,tserong,Vicente-Cheng,ibrokethecloud
+          team-reviewers: os
           signoff: false
           branch: bump-nv-driver-${{ github.ref_name }}
           delete-branch: true

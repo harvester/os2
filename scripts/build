@@ -13,3 +13,8 @@ docker build ${DOCKER_BUILD_ARGS} \
   --build-arg CACHEBUST="${CACHEBUST}" \
   -t ${IMAGE} .
 
+# restore the original Dockerfile
+if [ -n "${VERSION_PATCHED}" ]; then
+  mv Dockerfile.bak Dockerfile
+  mv nvidia-driver-toolkit/Dockerfile.bak nvidia-driver-toolkit/Dockerfile
+fi

@@ -1,10 +1,5 @@
 name: "Rootfs Layout Settings"
 stages:
-  rootfs.before:
-    - name: "Pull data from provider"
-      datasource:
-        providers: ["cdrom"]
-        path: "/oem"
   rootfs:
     - if: '[ ! -f "/run/cos/recovery_mode" ]'
       name: "Layout configuration"

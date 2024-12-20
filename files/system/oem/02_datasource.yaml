@@ -1,5 +1,10 @@
 name: "Elemental cloud-config from a removable device"
 stages:
+  rootfs.before:
+    - name: "Pull data from provider"
+      datasource:
+        providers: ["cdrom"]
+        path: "/oem"
   initramfs:
   - name: "Pull data from provider"
     datasource:

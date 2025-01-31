@@ -12,3 +12,8 @@ jobs:
       tag: ${{ github.ref_name }}
       push: true
     secrets: inherit
+
+  create-corresponding-pull-requests:
+    uses: ./.github/workflows/installer-pr.yml
+    with:
+      tag: ${{ github.ref_name }}

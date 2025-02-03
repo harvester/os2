@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: registry.suse.com/bci/bci-base:15.5
-    needs: generate-image-diff
     steps: 
       - name: fetch-target-version
         run: |
@@ -81,7 +80,6 @@ jobs:
 
   create-addon-pr:
     runs-on: ubuntu-latest
-    needs: generate-image-diff
     steps:
       - name: fetch-target-version
         run: |

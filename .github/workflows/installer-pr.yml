@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "targetVersion=$(echo ${{ inputs.tag }} | cut -d'-' -f1)" >> $GITHUB_ENV
       - name: Install docker
-        run: zypper ref && zypper -n install docker
+        run: zypper ref && zypper -n install docker npm
       - name: Pull release image
         run: |
           docker pull ${{ env.IMAGE_NAME }}
@@ -28,7 +28,7 @@ jobs:
           chmod +x /usr/bin/container-diff
       - name: Get current OS image from installer
         run: |
-          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/$targetVersion/scripts/package-harvester-os -o /tmp/package-harvester-os
+          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/${{ env.targetVersion }}/scripts/package-harvester-os -o /tmp/package-harvester-os
           grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
       - name: Run container-diff
         run: |
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: harvester/harvester-installer
-          ref: $targetVersion
+          ref: ${{ env.targetVersion }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
       - name: Create installer PR
@@ -75,7 +75,7 @@ jobs:
 
             **More info:**
             ```
-            $packagesDiff
+            ${{ env.packagesDiff }}
             ```
 
   create-addon-pr:
@@ -88,7 +88,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           repository: harvester/addons
-          ref: $targetVersion
+          ref: ${{ env.targetVersion }}
       - name: Update nvidia driver toolkit tag
         run: |
           sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ inputs.tag }}\n/}" pkg/templates/rancherd-22-addons.yaml

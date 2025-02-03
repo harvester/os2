@@ -14,6 +14,7 @@ jobs:
     secrets: inherit
 
   create-corresponding-pull-requests:
+    needs: build-for-release
     uses: ./.github/workflows/installer-pr.yml
     with:
       tag: ${{ github.ref_name }}

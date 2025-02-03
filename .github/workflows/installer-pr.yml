@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "targetVersion=$(echo ${{ inputs.tag }} | cut -d'-' -f1)" >> $GITHUB_ENV
       - name: Install docker
-        run: zypper ref && zypper -n install docker npm
+        run: zypper ref && zypper -n install docker npm git
       - name: Pull release image
         run: |
           docker pull ${{ env.IMAGE_NAME }}

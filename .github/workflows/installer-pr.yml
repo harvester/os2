@@ -44,6 +44,10 @@ jobs:
           ref: ${{ env.targetVersion }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
+      - name: Config PR committer
+        run: |
+          git config --global user.email "<noreply@github.com>"
+          git config --global user.name "Github"
       - name: Create PR Content
         run: |
           echo "prContent<<EOF" >> $GITHUB_ENV
@@ -89,6 +93,10 @@ jobs:
       - name: Update nvidia driver toolkit tag
         run: |
           sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ inputs.tag }}\n/}" pkg/templates/rancherd-22-addons.yaml
+      - name: Config PR committer
+        run: |
+          git config --global user.email "<noreply@github.com>"
+          git config --global user.name "Github"
       - name: create PR content
         run: |
           echo "prContent<<EOF" >> $GITHUB_ENV
@@ -115,4 +123,4 @@ jobs:
             --head bump-nv-driver-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump nvidia-driver-toolkit ${{ inputs.tag }}" \
-            --body ${{ env.prContent }} \
+            --body ${{ env.prContent }}

@@ -79,7 +79,7 @@ jobs:
             --head bump-os-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump OS ${{ inputs.tag }}" \
-            --body ${{ env.prContent }}
+            --body "${{ env.prContent }}"
 
   create-addon-pr:
     runs-on: ubuntu-latest
@@ -127,4 +127,4 @@ jobs:
             --head bump-nv-driver-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump nvidia-driver-toolkit ${{ inputs.tag }}" \
-            --body ${{ env.prContent }}
+            --body "${{ env.prContent }}"

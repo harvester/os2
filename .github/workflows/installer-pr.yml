@@ -13,7 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: registry.suse.com/bci/bci-base:15.5
-    steps: 
+    steps:
+      - name: Set up GitHub CLI
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.66.1/gh_2.66.1_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar xzf ghcli.tar.gz
+          mv gh_2.66.1_linux_amd64/bin/gh /usr/local/bin/
+          gh --version 
       - name: fetch-target-version
         run: |
           echo "targetVersion=$(echo ${{ inputs.tag }} | cut -d'-' -f1)" >> $GITHUB_ENV
@@ -69,7 +75,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
+          git config --global --add safe.directory $PWD
           git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
+          echo "$GITHUB_TOKEN" | gh auth login --with-token
           gh auth setup-git
           if [ -z "$(git status --porcelain)" ]; then
             echo "No changes to commit, skip PR creation."

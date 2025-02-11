@@ -68,7 +68,9 @@ jobs:
           echo "**Test plan:**" >> $GITHUB_ENV
           echo "" >> $GITHUB_ENV
           echo "**More info:**" >> $GITHUB_ENV
+          echo "```" >> $GITHUB_ENV
           cat /tmp/diff-result.txt >> $GITHUB_ENV
+          echo "```" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
 
       - name: Create installer PR

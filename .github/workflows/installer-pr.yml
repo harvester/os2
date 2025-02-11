@@ -69,11 +69,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
+          git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
+          gh auth setup-git
           git add .
           git commit -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-os-${{ inputs.tag }}
           gh pr create \
-            --base {{ env.targetVersion }} \
+            --base ${{ env.targetVersion }} \
             --head bump-os-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump OS ${{ inputs.tag }}" \
@@ -121,7 +123,7 @@ jobs:
           git commit -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-nv-driver-${{ inputs.tag }}
           gh pr create \
-            --base {{ env.targetVersion }} \
+            --base ${{ env.targetVersion }} \
             --head bump-nv-driver-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump nvidia-driver-toolkit ${{ inputs.tag }}" \

@@ -37,11 +37,6 @@ jobs:
           echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
           container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=diff-result.txt
           cat diff-result.txt
-      - name: Set diff result to environment variable
-        run: |
-          echo "packagesDiff<<EOF" >> $GITHUB_ENV
-          cat diff-result.txt >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV 
       - name: Clone harvester-installer repo
         uses: actions/checkout@v3
         with:
@@ -49,34 +44,36 @@ jobs:
           ref: ${{ env.targetVersion }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
+      - name: Create PR Content
+        run: |
+          echo "prContent<<EOF" >> $GITHUB_ENV
+          echo "**Problem:**" >> $GITHUB_ENV
+          echo "Harvester base OS needs to update." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Solution:**" >> $GITHUB_ENV
+          echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Related Issue:**" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Test plan:**" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**More info:**" >> $GITHUB_ENV
+          cat diff-result.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Create installer PR
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-          commit-message: Bump OS ${{ inputs.tag }}
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          team-reviewers: os
-          signoff: false
-          branch: bump-os-${{ inputs.tag }}
-          delete-branch: true
-          title: 'Bump OS ${{ inputs.tag }}'
-          draft: false
-          body: |
-            **Problem:**
-            Harvester base OS needs to update.
-
-            **Solution:**
-            Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }}).
-
-            **Related Issue:**
-
-            **Test plan:**
-
-            **More info:**
-            ```
-            ${{ env.packagesDiff }}
-            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          git add .
+          git commit -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git push origin HEAD:bump-os-${{ inputs.tag }}
+          gh pr create \
+            --base {{ env.targetVersion }} \
+            --head bump-os-${{ inputs.tag }} \
+            --reviewer "harvester/os" \
+            --title "Bump OS ${{ inputs.tag }}" \
+            --body ${{ env.prContent }}
 
   create-addon-pr:
     runs-on: ubuntu-latest
@@ -92,27 +89,30 @@ jobs:
       - name: Update nvidia driver toolkit tag
         run: |
           sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ inputs.tag }}\n/}" pkg/templates/rancherd-22-addons.yaml
+      - name: create PR content
+        run: |
+          echo "prContent<<EOF" >> $GITHUB_ENV
+          echo "**Problem:**" >> $GITHUB_ENV
+          echo "The nvidia driver toolkit needs to update." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Solution:**" >> $GITHUB_ENV
+          echo "Bump nvidia driver toolkit image as related baseos [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Related Issue:**" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Test plan:**" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
       - name: Create Addons PR
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.BOT_TOKEN }}
-          commit-message: Bump nvidia-driver-toolkit ${{ inputs.tag }}
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          team-reviewers: os
-          signoff: false
-          branch: bump-nv-driver-${{ inputs.tag }}
-          delete-branch: true
-          title: 'Bump nvidia-driver-toolkit ${{ inputs.tag }}'
-          draft: false
-          body: |
-            **Problem:**
-            The nvidia driver toolkit needs to update.
-
-            **Solution:**
-            Bump nvidia driver toolkit image as related baseos [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }}).
-
-            **Related Issue:**
-
-            **Test plan:**
-            
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          git add .
+          git commit -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git push origin HEAD:bump-nv-driver-${{ inputs.tag }}
+          gh pr create \
+            --base {{ env.targetVersion }} \
+            --head bump-nv-driver-${{ inputs.tag }} \
+            --reviewer "harvester/os" \
+            --title "Bump nvidia-driver-toolkit ${{ inputs.tag }}" \
+            --body ${{ env.prContent }} \

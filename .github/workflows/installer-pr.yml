@@ -56,22 +56,24 @@ jobs:
           git config --global user.name "Github"
       - name: Create PR Content
         run: |
-          echo "prContent<<EOF" >> $GITHUB_ENV
-          echo "**Problem:**" >> $GITHUB_ENV
-          echo "Harvester base OS needs to update." >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Solution:**" >> $GITHUB_ENV
-          echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})." >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Related Issue:**" >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Test plan:**" >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**More info:**" >> $GITHUB_ENV
-          echo "```" >> $GITHUB_ENV
-          cat /tmp/diff-result.txt >> $GITHUB_ENV
-          echo "```" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          {
+            echo "prContent<<EOF"
+            echo "**Problem:**"
+            echo "Harvester base OS needs to update."
+            echo ""
+            echo "**Solution:**"
+            echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ env.TEST_TAG }})."
+            echo ""
+            echo "**Related Issue:**"
+            echo ""
+            echo "**Test plan:**"
+            echo ""
+            echo "**More info:**"
+            echo '~~~'
+            cat /tmp/diff-result.txt
+            echo '~~~'
+            echo "EOF"
+          } >> $GITHUB_ENV
 
       - name: Create installer PR
         env:

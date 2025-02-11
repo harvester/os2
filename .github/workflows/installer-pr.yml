@@ -62,7 +62,7 @@ jobs:
             echo "Harvester base OS needs to update."
             echo ""
             echo "**Solution:**"
-            echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ env.TEST_TAG }})."
+            echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})."
             echo ""
             echo "**Related Issue:**"
             echo ""

@@ -77,7 +77,6 @@ jobs:
         run: |
           git config --global --add safe.directory $PWD
           git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
-          echo "$GITHUB_TOKEN" | gh auth login --with-token
           gh auth setup-git
           if [ -z "$(git status --porcelain)" ]; then
             echo "No changes to commit, skip PR creation."

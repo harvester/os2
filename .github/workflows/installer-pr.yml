@@ -36,7 +36,7 @@ jobs:
           docker pull $BASE_OS_IMAGE
           echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
           container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=/tmp/diff-result.txt
-          cat diff-result.txt
+          cat /tmp/diff-result.txt
       - name: Clone harvester-installer repo
         uses: actions/checkout@v3
         with:
@@ -71,6 +71,10 @@ jobs:
         run: |
           git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
           gh auth setup-git
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit, skip PR creation."
+            exit 0
+          fi
           git add .
           git commit -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-os-${{ inputs.tag }}
@@ -119,6 +123,10 @@ jobs:
         run: |
           git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
           gh auth setup-git
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit, skip PR creation."
+            exit 0
+          fi
           git add .
           git commit -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-nv-driver-${{ inputs.tag }}

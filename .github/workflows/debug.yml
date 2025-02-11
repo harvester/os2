@@ -1,0 +1,94 @@
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+env:
+  IMAGE_NAME: rancher/harvester-os:v1.4-20250211
+  TEST_TAG: v1.4-20250211
+  GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
+
+jobs:
+  create-installer-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify the secret is not empty
+        env:
+          TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          echo "my token is $TOKEN"
+          if [ -z "${{ env.GITHUB_TOKEN }}" ]; then
+            echo "Secret 'BOT_TOKEN' is empty or not set!"
+            exit 1
+          else
+            echo "Secret 'BOT_TOKEN' is set."
+          fi
+      - name: Set up GitHub CLI
+        run: |
+          curl -sSL https://github.com/cli/cli/releases/download/v2.66.1/gh_2.66.1_linux_amd64.tar.gz -o ghcli.tar.gz
+          tar xzf ghcli.tar.gz
+          mv gh_2.66.1_linux_amd64/bin/gh /usr/local/bin/
+          gh --version
+      - name: fetch-target-version
+        run: |
+          echo "targetVersion=$(echo ${{ env.TEST_TAG }} | cut -d'-' -f1)" >> $GITHUB_ENV
+      - name: Install docker
+        run: zypper ref && zypper -n install docker npm git
+      - name: Pull release image
+        run: |
+          docker pull ${{ env.IMAGE_NAME }}
+      - name: Install container-diff
+        run: |
+          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          chmod +x /usr/bin/container-diff
+      - name: Get current OS image from installer
+        run: |
+          curl -sfL https://raw.githubusercontent.com/harvester/harvester-installer/${{ env.targetVersion }}/scripts/package-harvester-os -o /tmp/package-harvester-os
+          grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
+      - name: Run container-diff
+        run: |
+          source /tmp/tmp-env
+          docker pull $BASE_OS_IMAGE
+          echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
+          container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=/tmp/diff-result.txt
+          cat /tmp/diff-result.txt
+      - name: Clone harvester-installer repo
+        uses: actions/checkout@v3
+        with:
+          repository: harvester/harvester-installer
+          ref: ${{ env.targetVersion }}
+      - name: Update os image
+        run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
+      - name: Config PR committer
+        run: |
+          git config --global user.email "<noreply@github.com>"
+          git config --global user.name "Github"
+      - name: Create PR Content
+        run: |
+          echo "prContent<<EOF" >> $GITHUB_ENV
+          echo "**Problem:**" >> $GITHUB_ENV
+          echo "Harvester base OS needs to update." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Solution:**" >> $GITHUB_ENV
+          echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ env.TEST_TAG }})." >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Related Issue:**" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**Test plan:**" >> $GITHUB_ENV
+          echo "" >> $GITHUB_ENV
+          echo "**More info:**" >> $GITHUB_ENV
+          cat /tmp/diff-result.txt >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Create installer PR
+        run: |
+          git config --global --add safe.directory $PWD
+          git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
+          echo ${{ env.GITHUB_TOKEN }} | gh auth login --with-token
+          gh auth setup-git
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit, skip PR creation."
+            exit 0
+          fi
+          git add .
+          git commit -m "Bump OS ${{ env.TEST_TAG }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          echo "Completed!"

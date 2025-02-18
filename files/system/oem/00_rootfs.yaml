@@ -13,6 +13,7 @@ stages:
           /etc/rancher
           /etc/ssh
           /etc/iscsi 
+          /etc/nvme
           /etc/cni
           /etc/pki/trust/anchors
           /home
@@ -50,4 +51,24 @@ stages:
         else
           mkdir -p /usr/local/etc
           cp /etc/machine-id /usr/local/etc
+        fi
+    - if: '[ ! -f "/run/cos/recovery_mode" -a -d "/etc/iscsi" ]'
+      name: "Generate /etc/iscsi/initiatorname.iscsi"
+      commands:
+      - |
+        if [ ! -f /etc/iscsi/initiatorname.iscsi ] ; then
+            /usr/bin/echo "Generating /etc/iscsi/initiatorname.iscsi"
+            /sbin/iscsi-gen-initiatorname
+        fi
+    - if: '[ ! -f "/run/cos/recovery_mode" -a -d "/etc/nvme" ]'
+      name: "Generate /etc/nvme/hostnqn and /etc/nvme/hostid"
+      commands:
+      - |
+        if [ ! -s /etc/nvme/hostnqn ]; then
+            /usr/bin/echo "Generating /etc/nvme/hostnqn"
+            /usr/sbin/nvme gen-hostnqn > /etc/nvme/hostnqn
+        fi
+        if [ ! -s /etc/nvme/hostid ]; then
+            /usr/bin/echo "Generating /etc/nvme/hostid"
+            sed -nr 's/.*:uuid:(.*?)$/\1/p' /etc/nvme/hostnqn > /etc/nvme/hostid
         fi

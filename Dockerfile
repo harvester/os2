@@ -47,3 +47,8 @@ ARG NERDCTL_VERSION=1.2.1
 RUN curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH}.tar.gz"
 RUN tar -zxvf nerdctl-bin.tar.gz && mv nerdctl /usr/bin/
 RUN rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootless.sh
+
+# Remove files that need to be unique on each host.
+# These will be generated automatically at runtime.
+# See https://github.com/harvester/harvester/issues/6911 for details
+RUN rm -f /etc/machine-id /etc/iscsi/initiatorname.iscsi /etc/nvme/hostid /etc/nvme/hostnqn

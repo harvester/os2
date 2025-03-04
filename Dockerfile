@@ -14,8 +14,8 @@ RUN mkdir -p /var/log/journal
 RUN mkdir -p /usr/local/cloud-config
 RUN mkdir -p /oem
 
-# Enable /tmp to be on tmpfs
-RUN cp /usr/share/systemd/tmp.mount /etc/systemd/system
+# Enable /tmp to be on tmpfs (was /usr/share/systemd/tmp.mount previously)
+RUN cp /usr/lib/systemd/system/tmp.mount /etc/systemd/system
 
 COPY files/ /
 

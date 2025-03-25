@@ -87,7 +87,7 @@ jobs:
             exit 0
           fi
           git add .
-          git commit -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git commit -s -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-os-${{ inputs.tag }}
           gh pr create \
             --base ${{ env.targetVersion }} \
@@ -139,7 +139,7 @@ jobs:
             exit 0
           fi
           git add .
-          git commit -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git commit -s -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
           git push origin HEAD:bump-nv-driver-${{ inputs.tag }}
           gh pr create \
             --base ${{ env.targetVersion }} \

@@ -4,6 +4,7 @@ on:
   push:
     branches:
     - sle-micro
+    - sl-micro-6
   schedule:
     - cron: "0 1 * * *"
 

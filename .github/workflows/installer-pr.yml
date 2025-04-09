@@ -52,8 +52,8 @@ jobs:
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
       - name: Config PR committer
         run: |
-          git config --global user.email "<noreply@github.com>"
-          git config --global user.name "Github"
+          git config --global user.email "<${{ github.actor }}@users.noreply.github.com>"
+          git config --global user.name "${{ github.actor }}"
       - name: Create PR Content
         run: |
           {
@@ -87,7 +87,7 @@ jobs:
             exit 0
           fi
           git add .
-          git commit -s -m "Bump OS ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git commit -s -m "Bump OS ${{ inputs.tag }}"
           git push origin HEAD:bump-os-${{ inputs.tag }}
           gh pr create \
             --base ${{ env.targetVersion }} \
@@ -112,8 +112,8 @@ jobs:
           sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ inputs.tag }}\n/}" pkg/templates/rancherd-22-addons.yaml
       - name: Config PR committer
         run: |
-          git config --global user.email "<noreply@github.com>"
-          git config --global user.name "Github"
+          git config --global user.email "<${{ github.actor }}@users.noreply.github.com>"
+          git config --global user.name "${{ github.actor }}"
       - name: create PR content
         run: |
           echo "prContent<<EOF" >> $GITHUB_ENV
@@ -139,7 +139,7 @@ jobs:
             exit 0
           fi
           git add .
-          git commit -s -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}" --author="${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>"
+          git commit -s -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}"
           git push origin HEAD:bump-nv-driver-${{ inputs.tag }}
           gh pr create \
             --base ${{ env.targetVersion }} \

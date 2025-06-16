@@ -6,17 +6,17 @@ on:
     - cron: "0 5 * * *"
 
 env:
+  OS_IMAGE_v1_6_x: registry.opensuse.org/isv/rancher/harvester/os/v1.6/main/baseos:latest
   OS_IMAGE_v1_5_x: registry.opensuse.org/isv/rancher/harvester/os/v1.5/main/baseos:latest
   OS_IMAGE_v1_4_x: registry.opensuse.org/isv/rancher/harvester/os/v1.4/main/baseos:latest
-  OS_IMAGE_v1_3_x: registry.opensuse.org/isv/rancher/harvester/os/v1.3/main/baseos:latest
 
 jobs:
   get-all-releases:
     runs-on: ubuntu-latest
     outputs:
+      releaseName_v1_6_x: ${{ steps.get_release_v1_6_x.outputs.releaseName }}
       releaseName_v1_5_x: ${{ steps.get_release_v1_5_x.outputs.releaseName }}
       releaseName_v1_4_x: ${{ steps.get_release_v1_4_x.outputs.releaseName }}
-      releaseName_v1_3_x: ${{ steps.get_release_v1_3_x.outputs.releaseName }}
 
     steps:
       - name: Get all releases
@@ -32,6 +32,19 @@ jobs:
             
             const releases = response.data;
             core.setOutput('allReleases', releases);
+      - name: Get v1.6 latest release
+        id: get_release_v1_6_x
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const releases = ${{ steps.get_all_releases.outputs.allReleases }};
+            const releaseNamePrefix = "v1.6";
+            const foundRelease = releases.find(release => release.name.startsWith(releaseNamePrefix));
+
+            if (foundRelease) {
+              const releaseName = foundRelease.name;
+              core.setOutput('releaseName', releaseName);
+            }
       - name: Get v1.5 latest release
         id: get_release_v1_5_x
         uses: actions/github-script@v6
@@ -58,21 +71,38 @@ jobs:
               const releaseName = foundRelease.name;
               core.setOutput('releaseName', releaseName);
             }
-      - name: Get v1.3 latest release
-        id: get_release_v1_3_x
+
+  fetch-v1-6-x-diff:
+    needs: get-all-releases
+    runs-on: ubuntu-latest
+    container:
+      image: registry.suse.com/bci/bci-base:15.5
+
+    steps:
+      - name: Set osImage
+        id: set_os_image
         uses: actions/github-script@v6
         with:
           script: |
-            const releases = ${{ steps.get_all_releases.outputs.allReleases }};
-            const releaseNamePrefix = "v1.3";
-            const foundRelease = releases.find(release => release.name.startsWith(releaseNamePrefix));
+            const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_6_x }}`;
+            core.setOutput('osImage', osImage);
+      - name: Install docker
+        run: zypper ref && zypper -n install docker
+      - name: Install container-diff
+        run: |
+          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          chmod +x /usr/bin/container-diff
+      - name: Pull release image
+        run: |
+          docker pull ${{ steps.set_os_image.outputs.osImage }}
+      - name: Run container-diff for v1.6.x
+        run: |
+          docker pull ${{ env.OS_IMAGE_v1_6_x }}
+          echo "Diff ${{ env.OS_IMAGE_v1_6_x }} with ${{ steps.set_os_image.outputs.osImage }}..."
+          container-diff diff daemon://docker.io/${{ steps.set_os_image.outputs.osImage }} daemon://docker.io/${{ env.OS_IMAGE_v1_6_x }} --type=rpm --output=diff-result.txt
+          cat diff-result.txt
 
-            if (foundRelease) {
-              const releaseName = foundRelease.name;
-              core.setOutput('releaseName', releaseName);
-            }
-
-  fetch-v1-5-x-diff:   
+  fetch-v1-5-x-diff:
     needs: get-all-releases
     runs-on: ubuntu-latest
     container:
@@ -103,7 +133,7 @@ jobs:
           cat diff-result.txt
 
 
-  fetch-v1-4-x-diff:   
+  fetch-v1-4-x-diff:
     needs: get-all-releases
     runs-on: ubuntu-latest
     container:
@@ -131,34 +161,4 @@ jobs:
           docker pull ${{ env.OS_IMAGE_v1_4_x }}
           echo "Diff ${{ env.OS_IMAGE_v1_4_x }} with ${{ steps.set_os_image.outputs.osImage }}..."
           container-diff diff daemon://docker.io/${{ steps.set_os_image.outputs.osImage }} daemon://docker.io/${{ env.OS_IMAGE_v1_4_x }} --type=rpm --output=diff-result.txt
-          cat diff-result.txt
-
-  fetch-v1-3-x-diff:   
-    needs: get-all-releases
-    runs-on: ubuntu-latest
-    container:
-      image: registry.suse.com/bci/bci-base:15.4
-
-    steps:
-      - name: Set osImage
-        id: set_os_image
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_3_x }}`;
-            core.setOutput('osImage', osImage);
-      - name: Install docker
-        run: zypper ref && zypper -n install docker
-      - name: Install container-diff
-        run: |
-          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
-          chmod +x /usr/bin/container-diff
-      - name: Pull release image
-        run: |
-          docker pull ${{ steps.set_os_image.outputs.osImage }}
-      - name: Run container-diff for v1.3.x
-        run: |
-          docker pull ${{ env.OS_IMAGE_v1_3_x }}
-          echo "Diff ${{ env.OS_IMAGE_v1_3_x }} with ${{ steps.set_os_image.outputs.osImage }}..."
-          container-diff diff daemon://docker.io/${{ steps.set_os_image.outputs.osImage }} daemon://docker.io/${{ env.OS_IMAGE_v1_3_x }} --type=rpm --output=diff-result.txt
           cat diff-result.txt

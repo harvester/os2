@@ -52,3 +52,12 @@ RUN rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootles
 # These will be generated automatically at runtime.
 # See https://github.com/harvester/harvester/issues/6911 for details
 RUN rm -f /etc/machine-id /etc/iscsi/initiatorname.iscsi /etc/nvme/hostid /etc/nvme/hostnqn
+
+# NetworkManager should already be enabled by default when it's installed,
+# but adding it here anyway to make it explicit.  NetworkManager-dispatcher
+# is also enabled, even though we're not currently taking advantage of any
+# dispatcher scripts, but rather just to get rid of a whole lot of annoying
+# errors in the journal along the lines of "Activation via systemd failed
+# for unit 'dbus-org.freedesktop.nm-dispatcher.service'")
+RUN systemctl enable NetworkManager.service && \
+    systemctl enable NetworkManager-dispatcher.service

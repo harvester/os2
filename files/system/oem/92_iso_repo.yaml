@@ -10,11 +10,10 @@ stages:
         permissions: 0664
       commands:
       - |
-        for i in /sys/class/net/{eth*,en*,ib*}; do
-          [ -e $i ] || continue
-          if_cfg="/etc/sysconfig/network/ifcfg-$(basename $i)"
-          echo "BOOTPROTO=dhcp" > $if_cfg
-          echo "STARTMODE=onboot" >> $if_cfg
-        done
+        # Let NetworkManager bring up all connected interfaces with DHCP
+        # automatically for the ISO repo
+        if [ -e /etc/NetworkManager/conf.d/harvester.conf ] ; then
+          sed -i '/^no-auto-default=\*/d' /etc/NetworkManager/conf.d/harvester.conf
+        fi
       - cp /etc/nginx/conf.d/iso.conf.disabled /etc/nginx/conf.d/iso.conf
       - systemctl enable nginx

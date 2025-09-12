@@ -39,8 +39,8 @@ RUN if [ "$TARGETPLATFORM" != "linux/amd64" ] && [ "$TARGETPLATFORM" != "linux/a
 ENV ARCH=${TARGETPLATFORM#linux/}
 
 # Download rancherd
-ARG RANCHERD_VERSION=v0.6.0-rc1
-RUN curl -o /usr/bin/rancherd -sfL "https://github.com/rancher/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-${ARCH}" && chmod 0755 /usr/bin/rancherd
+ARG RANCHERD_VERSION=v0.7.0-rc1
+RUN curl -o /usr/bin/rancherd -sfL "https://github.com/harvester/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-${ARCH}" && chmod 0755 /usr/bin/rancherd
 
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1

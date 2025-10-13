@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7.0
 
-FROM registry.opensuse.org/isv/rancher/harvester/os/sl-micro-6.0/main/baseos:latest AS base
+FROM registry.opensuse.org/isv/rancher/harvester/os/sl-micro-6.1/main/baseos:latest AS base
 
 ARG CACHEBUST
 

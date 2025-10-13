@@ -1,4 +1,4 @@
-FROM registry.opensuse.org/isv/rancher/harvester/os/sl-micro-6.0/main/baseos-headers:latest
+FROM registry.opensuse.org/isv/rancher/harvester/os/sl-micro-6.1/main/baseos-headers:latest
 
 ARG TARGETARCH
 RUN curl -kLO "https://dl.k8s.io/release/$(curl -k -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/${TARGETARCH}/kubectl" \

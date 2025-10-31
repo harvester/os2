@@ -11,6 +11,9 @@ The base OS for Harvester, powered by cOS-toolkit.
 
 Mostly we will develop on the *sle-micro* branch and backport what we needed to the stable branch.
 
+There is a sl-micro-6 branch, but this was only temporary for staging purposes when migrating from
+SLE Micro 5.5 to SL Micro 6.1, and is not part of our normal workflow.
+
 # How-Tos
 
 ## Update luet repository

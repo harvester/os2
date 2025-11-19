@@ -1,29 +1,13 @@
 name: "apply Harvester sshd_config"
 stages:
    initramfs:
-     - name: "clear original config"
+     - name: "remove SL Micro 5.x ssh and sshd config"
        commands:
        - |
-         sed -i '/### Harvester Config/,$d' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*PermitRootLogin.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*LoginGraceTime.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*AllowGroups.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*AllowAgentForwarding.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*X11Forwarding.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*AllowTcpForwarding.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*MaxAuthTries.*\)/#\1/' /etc/ssh/sshd_config
-         sed -i 's/^\([^#]*Subsystem.*sftp\)/#\1/' /etc/ssh/sshd_config
-     - name: "append config"
-       commands:
-       - |
-         cat <<EOF >> /etc/ssh/sshd_config
-         ### Harvester Config
-         PermitRootLogin no
-         LoginGraceTime 60
-         AllowGroups admin
-         AllowAgentForwarding no
-         X11Forwarding no
-         AllowTcpForwarding no
-         MaxAuthTries 3
-         Include /etc/ssh/sshd_config.d/*.conf
-         EOF
+         # remove config files that will be here on systems
+         # upgrade from Harvester before v1.7.0, which would
+         # otherwise completely override the system default
+         # config file /usr/etc/ssh/sshd_config
+         rm -f /etc/ssh/sshd_config
+         # same for /usr/etc/ssh/ssh_config
+         rm -f /etc/ssh/ssh_config

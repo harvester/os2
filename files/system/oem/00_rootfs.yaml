@@ -9,6 +9,7 @@ stages:
         OVERLAY: "tmpfs:25%"
         RW_PATHS: "/var /etc /srv /boot"
         PERSISTENT_STATE_PATHS: >-
+          /etc/NetworkManager
           /etc/systemd
           /etc/rancher
           /etc/ssh

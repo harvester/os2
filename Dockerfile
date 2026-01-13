@@ -7,6 +7,9 @@ ARG CACHEBUST
 # elemental init first
 RUN elemental init --force
 
+# Fix https://github.com/harvester/harvester/issues/5945
+RUN chmod 644 /usr/lib/systemd/system/elemental*{service,timer} /usr/lib/dracut/modules.d/*elemental*/*service
+
 # Create the folder for journald persistent data
 RUN mkdir -p /var/log/journal
 

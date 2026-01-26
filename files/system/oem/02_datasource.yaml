@@ -3,10 +3,10 @@ stages:
   rootfs.before:
     - name: "Pull data from provider"
       datasource:
-        providers: ["cdrom"]
+        providers: ["cdrom","config-drive","openstack"]
         path: "/oem"
   initramfs:
   - name: "Pull data from provider"
     datasource:
-      providers: ["cdrom"]
+      providers: ["cdrom","config-drive","openstack"]
       path: "/oem"

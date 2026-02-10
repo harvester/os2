@@ -4,7 +4,7 @@ stages:
      - name: "patch lvm config (filter out loop/longhorn device)"
        commands:
        - |
-        sed -i 's/^devices.*/&\n\tglobal_filter = [ "r|\/dev\/loop.*|", "r|\/dev\/disk\/by-path\/.*longhorn.*|" ]/' /etc/lvm/lvm.conf
+        sed -i 's/^devices.*/&\n\tglobal_filter = [ "r|\/dev\/loop.*|", "r|\/dev\/disk\/by-path\/.*longhorn.*|", "r|\/dev\/mapper\/pvc-.*|" ]/' /etc/lvm/lvm.conf
      - name: "patch udev_sync, udev_rules on lvm config"
        commands:
        - |

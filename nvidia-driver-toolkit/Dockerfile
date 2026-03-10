@@ -1,4 +1,4 @@
-FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos-headers:latest
+FROM registry.opensuse.org/isv/rancher/harvester/os/v1.9/main/baseos-headers:v1.9
 
 ARG TARGETARCH
 RUN VERSION=$(curl -sSfL "https://dl.k8s.io/release/stable.txt") && \

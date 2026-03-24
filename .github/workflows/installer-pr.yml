@@ -44,7 +44,7 @@ jobs:
           container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=/tmp/diff-result.txt
           cat /tmp/diff-result.txt
       - name: Clone harvester-installer repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           repository: harvester/harvester-installer
           ref: ${{ env.targetVersion }}
@@ -103,7 +103,7 @@ jobs:
         run: |
           echo "targetVersion=$(echo ${{ inputs.tag }} | cut -d'-' -f1)" >> $GITHUB_ENV
       - name: Clone Addons repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           repository: harvester/addons
           ref: ${{ env.targetVersion }}

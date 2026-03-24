@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Get all releases
         id: get_all_releases
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -36,7 +36,7 @@ jobs:
             core.setOutput('allReleases', releases);
       - name: Get v1.8 latest release
         id: get_release_v1_8_x
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const releases = ${{ steps.get_all_releases.outputs.allReleases }};
@@ -49,7 +49,7 @@ jobs:
             }
       - name: Get v1.7 latest release
         id: get_release_v1_7_x
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const releases = ${{ steps.get_all_releases.outputs.allReleases }};
@@ -62,7 +62,7 @@ jobs:
             }
       - name: Get v1.6 latest release
         id: get_release_v1_6_x
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const releases = ${{ steps.get_all_releases.outputs.allReleases }};
@@ -75,7 +75,7 @@ jobs:
             }
       - name: Get v1.5 latest release
         id: get_release_v1_5_x
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const releases = ${{ steps.get_all_releases.outputs.allReleases }};
@@ -96,7 +96,7 @@ jobs:
     steps:
       - name: Set osImage
         id: set_os_image
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_8_x }}`;
@@ -126,7 +126,7 @@ jobs:
     steps:
       - name: Set osImage
         id: set_os_image
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_7_x }}`;
@@ -156,7 +156,7 @@ jobs:
     steps:
       - name: Set osImage
         id: set_os_image
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_6_x }}`;
@@ -186,7 +186,7 @@ jobs:
     steps:
       - name: Set osImage
         id: set_os_image
-        uses: actions/github-script@v6
+        uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6
         with:
           script: |
             const osImage = `rancher/harvester-os:${{ needs.get-all-releases.outputs.releaseName_v1_5_x }}`;

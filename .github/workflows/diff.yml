@@ -90,7 +90,8 @@ jobs:
         run: zypper ref && zypper -n install docker
       - name: Install container-diff
         run: |
-          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          curl -sSfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          echo "818c219ce9f9670cd5c766b9da5036cf75bbf98bc99eb258f5e8f90e80367c88  /usr/bin/container-diff" | sha256sum -c -
           chmod +x /usr/bin/container-diff
       - name: Pull release image
         run: |
@@ -120,7 +121,8 @@ jobs:
         run: zypper ref && zypper -n install docker
       - name: Install container-diff
         run: |
-          curl -sfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          curl -sSfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
+          echo "818c219ce9f9670cd5c766b9da5036cf75bbf98bc99eb258f5e8f90e80367c88  /usr/bin/container-diff" | sha256sum -c -
           chmod +x /usr/bin/container-diff
       - name: Pull release image
         run: |

@@ -40,13 +40,25 @@ ENV ARCH=${TARGETPLATFORM#linux/}
 
 # Download rancherd
 ARG RANCHERD_VERSION=v0.7.0-rc2
-RUN curl -o /usr/bin/rancherd -sfL "https://github.com/harvester/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-${ARCH}" && chmod 0755 /usr/bin/rancherd
+RUN curl -o /usr/bin/rancherd -sSfL "https://github.com/harvester/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-${ARCH}" && \
+    case "${ARCH}" in \
+        amd64) EXPECTED_HASH="5a9266a2b69959c2d5d717a331af2acf9901fb3db4f2a02c08c74b0132aa2f60" ;; \
+        arm64) EXPECTED_HASH="a2df460e1e7694f8bffee333c58ac1be05d46536608140a3673f78a82f229059" ;; \
+    esac && \
+    echo "${EXPECTED_HASH}  /usr/bin/rancherd" | sha256sum -c - && \
+    chmod 0755 /usr/bin/rancherd
 
 # Download nerdctl
 ARG NERDCTL_VERSION=1.2.1
-RUN curl -o ./nerdctl-bin.tar.gz -sfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH}.tar.gz"
-RUN tar -zxvf nerdctl-bin.tar.gz && mv nerdctl /usr/bin/
-RUN rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootless.sh
+RUN curl -o ./nerdctl-bin.tar.gz -sSfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH}.tar.gz" && \
+    case "${ARCH}" in \
+        amd64) EXPECTED_HASH="67aa5cf2a32a3dc0c335b96133daee4d2764d9c1a4d86a38398c4995d2df2176" ;; \
+        arm64) EXPECTED_HASH="8dc3d918b44b3ea863a4bc8f121277389d3bdb952d549e44916502a0774ab1bb" ;; \
+    esac && \
+    echo "${EXPECTED_HASH}  nerdctl-bin.tar.gz" | sha256sum -c - && \
+    tar -zxvf nerdctl-bin.tar.gz && \
+    mv nerdctl /usr/bin/ && \
+    rm -f nerdctl-bin.tar.gz containerd-rootless-setuptool.sh containerd-rootless.sh
 
 # Remove files that need to be unique on each host.
 # These will be generated automatically at runtime.

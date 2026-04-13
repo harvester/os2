@@ -1,0 +1,2 @@
+# Change the default umask to `0027` for security.
+UMASK   027

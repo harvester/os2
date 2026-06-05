@@ -42,11 +42,11 @@ RUN if [ "$TARGETPLATFORM" != "linux/amd64" ] && [ "$TARGETPLATFORM" != "linux/a
 ENV ARCH=${TARGETPLATFORM#linux/}
 
 # Download rancherd
-ARG RANCHERD_VERSION=v0.8.0-rc1
+ARG RANCHERD_VERSION=v0.9.0-rc1
 RUN curl -o /usr/bin/rancherd -sSfL "https://github.com/harvester/rancherd/releases/download/${RANCHERD_VERSION}/rancherd-${ARCH}" && \
     case "${ARCH}" in \
-        amd64) EXPECTED_HASH="235d358a4c66ea95848a46d95d225f5f2f1a85dd04d433771fdc4bb816dd4744" ;; \
-        arm64) EXPECTED_HASH="c246a85b300c14cff49730729bb6d6cce2a8314d21592ad3898b0155a90e5033" ;; \
+        amd64) EXPECTED_HASH="9e18273fa09421a0dfc21c7417959d03b0206aa93f41349e1f338c8ac7cde31f" ;; \
+        arm64) EXPECTED_HASH="c9d3bfb5cae7787e826757c4c89abb260597d1007d6669c4122d1572a6d83260" ;; \
     esac && \
     echo "${EXPECTED_HASH}  /usr/bin/rancherd" | sha256sum -c - && \
     chmod 0755 /usr/bin/rancherd

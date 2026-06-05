@@ -52,11 +52,11 @@ RUN curl -o /usr/bin/rancherd -sSfL "https://github.com/harvester/rancherd/relea
     chmod 0755 /usr/bin/rancherd
 
 # Download nerdctl
-ARG NERDCTL_VERSION=1.2.1
+ARG NERDCTL_VERSION=2.3.1
 RUN curl -o ./nerdctl-bin.tar.gz -sSfL "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH}.tar.gz" && \
     case "${ARCH}" in \
-        amd64) EXPECTED_HASH="67aa5cf2a32a3dc0c335b96133daee4d2764d9c1a4d86a38398c4995d2df2176" ;; \
-        arm64) EXPECTED_HASH="8dc3d918b44b3ea863a4bc8f121277389d3bdb952d549e44916502a0774ab1bb" ;; \
+        amd64) EXPECTED_HASH="d293409b8f4efe445f3dfa3cb9f75aaca9eec4d6189b3527924507e5bbd64f56" ;; \
+        arm64) EXPECTED_HASH="12c5e574ade6114bd271cf4bac523760064f557e697ef6b9a02eb630d74a4c03" ;; \
     esac && \
     echo "${EXPECTED_HASH}  nerdctl-bin.tar.gz" | sha256sum -c - && \
     tar -zxvf nerdctl-bin.tar.gz && \

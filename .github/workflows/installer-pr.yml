@@ -34,9 +34,9 @@ jobs:
           curl -sSfL https://github.com/GoogleContainerTools/container-diff/releases/download/v0.17.0/container-diff-linux-amd64 -o /usr/bin/container-diff
           echo "818c219ce9f9670cd5c766b9da5036cf75bbf98bc99eb258f5e8f90e80367c88  /usr/bin/container-diff" | sha256sum -c -
           chmod +x /usr/bin/container-diff
-      - name: Get current OS image from installer
+      - name: Get current OS image from harvester
         run: |
-          curl -sSfL https://raw.githubusercontent.com/harvester/harvester-installer/${{ env.targetVersion }}/scripts/package-harvester-os -o /tmp/package-harvester-os
+          curl -sSfL https://raw.githubusercontent.com/harvester/harvester/${{ env.targetVersion }}/scripts/package-harvester-os -o /tmp/package-harvester-os
           grep '^BASE_OS_IMAGE="rancher/harvester-os:' /tmp/package-harvester-os > /tmp/tmp-env
       - name: Run container-diff
         run: |
@@ -45,10 +45,10 @@ jobs:
           echo "Diff $BASE_OS_IMAGE with ${{ env.IMAGE_NAME }}..."
           container-diff diff daemon://docker.io/$BASE_OS_IMAGE daemon://docker.io/${{ env.IMAGE_NAME }} --type=rpm --output=/tmp/diff-result.txt
           cat /tmp/diff-result.txt
-      - name: Clone harvester-installer repo
+      - name: Clone harvester repo
         uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
-          repository: harvester/harvester-installer
+          repository: harvester/harvester
           ref: ${{ env.targetVersion }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os

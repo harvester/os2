@@ -12,6 +12,7 @@ env:
   repo: "rancher"
   OSImageName: "harvester-os"
   NVDriverToolkitImageName: "harvester-nvidia-driver-toolkit"
+  KernelModuleDevelImageName: "harvester-kernel-module-devel"
 
 jobs:
   build-os-related-images:
@@ -69,3 +70,13 @@ jobs:
         file: nvidia-driver-toolkit/Dockerfile
         push: ${{ inputs.push }}
         tags: ${{ env.repo }}/${{ env.NVDriverToolkitImageName }}:${{ inputs.tag }}
+
+    - name: Docker Build (Kernel Module Devel Image)
+      uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # v5
+      with:
+        provenance: false
+        context: .
+        platforms: linux/amd64,linux/arm64
+        file: kernel-module-devel/Dockerfile
+        push: ${{ inputs.push }}
+        tags: ${{ env.repo }}/${{ env.KernelModuleDevelImageName }}:${{ inputs.tag }}

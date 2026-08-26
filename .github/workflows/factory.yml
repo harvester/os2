@@ -38,9 +38,11 @@ jobs:
       uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
     - name: Generate os-release
+      if: ${{ matrix.image == 'harvester-os' }}
       run: bash scripts/ci
 
     - name: Prepare entrypoint script for NV driver toolkit image
+      if: ${{ matrix.image == 'harvester-nvidia-driver-toolkit' }}
       run: cp nvidia-driver-toolkit/entrypoint.sh .
 
     - name: Resolve registries

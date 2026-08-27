@@ -23,10 +23,15 @@ jobs:
         include:
           - image: harvester-os
             dockerfile: Dockerfile
+            sbom: true
           - image: harvester-nvidia-driver-toolkit
             dockerfile: nvidia-driver-toolkit/Dockerfile
+            # BuildKit caps generated SBOM attestations at 40MiB before export;
+            # the SBOM for this image (built from baseos-headers) exceeds that.
+            sbom: false
           - image: harvester-kernel-module-devel
             dockerfile: kernel-module-devel/Dockerfile
+            sbom: false
     steps:
     - name: Checkout code
       uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -47,7 +52,7 @@ jobs:
 
     - name: Resolve registries
       id: resolve
-      uses: harvester/harvester-actions/actions/resolve-registries@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/resolve-registries@54b12b409214670236afedf3ab412b77b05f85ba # main
       with:
         release-tag-name: ${{ inputs.tag }}
         is-release: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
@@ -60,11 +65,11 @@ jobs:
     - name: Login to Docker Hub
       id: login-docker
       if: ${{ inputs.push == true && steps.resolve.outputs.use-docker-io == 'true' }}
-      uses: harvester/harvester-actions/actions/login-docker-hub@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/login-docker-hub@54b12b409214670236afedf3ab412b77b05f85ba # main
 
     - name: Publish public ${{ matrix.image }} image
       if: ${{ inputs.push == true && steps.resolve.outputs.use-docker-io == 'true' }}
-      uses: harvester/harvester-actions/actions/publish-public-image@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/publish-public-image@54b12b409214670236afedf3ab412b77b05f85ba # main
       with:
         context: .
         dockerfile: ${{ matrix.dockerfile }}
@@ -77,11 +82,11 @@ jobs:
     - name: Login to Staging Registry
       id: login-staging
       if: ${{ inputs.push == true && steps.resolve.outputs.use-staging == 'true' }}
-      uses: harvester/harvester-actions/actions/login-staging-registry@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/login-staging-registry@54b12b409214670236afedf3ab412b77b05f85ba # main
 
     - name: Publish staging ${{ matrix.image }} image
       if: ${{ inputs.push == true && steps.resolve.outputs.use-staging == 'true' }}
-      uses: harvester/harvester-actions/actions/publish-prime-image@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/publish-prime-image@54b12b409214670236afedf3ab412b77b05f85ba # main
       with:
         context: .
         dockerfile: ${{ matrix.dockerfile }}
@@ -90,15 +95,16 @@ jobs:
         platforms: ${{ env.PLATFORMS }}
         registry: ${{ steps.login-staging.outputs.registry }}
         repository: ${{ steps.login-staging.outputs.repository }}
+        sbom: ${{ matrix.sbom }}
 
     - name: Login to Prime Registry
       id: login-prime
       if: ${{ inputs.push == true && steps.resolve.outputs.use-prime == 'true' }}
-      uses: harvester/harvester-actions/actions/login-prime-registry@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/login-prime-registry@54b12b409214670236afedf3ab412b77b05f85ba # main
 
     - name: Publish prime ${{ matrix.image }} image
       if: ${{ inputs.push == true && steps.resolve.outputs.use-prime == 'true' }}
-      uses: harvester/harvester-actions/actions/publish-prime-image@a6fc1cfb81904c08e2267675fd5ac7b11a5092a9 # main
+      uses: harvester/harvester-actions/actions/publish-prime-image@54b12b409214670236afedf3ab412b77b05f85ba # main
       with:
         context: .
         dockerfile: ${{ matrix.dockerfile }}
@@ -107,3 +113,4 @@ jobs:
         platforms: ${{ env.PLATFORMS }}
         registry: ${{ steps.login-prime.outputs.registry }}
         repository: ${{ steps.login-prime.outputs.repository }}
+        sbom: ${{ matrix.sbom }}

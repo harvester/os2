@@ -15,6 +15,9 @@ jobs:
 
   create-corresponding-pull-requests:
     needs: build-for-release
+    # Sprint releases tag os2 with the Harvester version (vX.Y.Z-dev-YYYYMMDD).
+    # The frozen tag is consumed at ISO build time, so no bump PR is needed.
+    if: ${{ !contains(github.ref_name, '-dev-') }}
     uses: ./.github/workflows/installer-pr.yml
     with:
       tag: ${{ github.ref_name }}

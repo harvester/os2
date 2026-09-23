@@ -52,6 +52,11 @@ jobs:
           ref: ${{ env.targetVersion }}
       - name: Update os image
         run: sed -i "s,^BASE_OS_IMAGE=.*,BASE_OS_IMAGE=\"${{ env.IMAGE_NAME }}\"," scripts/package-harvester-os
+      # harvester-nvidia-driver-toolkit is built from the same OS release and
+      # must follow the base OS. Since the addons moved in-tree its tag lives
+      # in addons/version_info of harvester/harvester.
+      - name: Update nvidia driver toolkit tag
+        run: sed -i "s,^NVIDIA_DRIVER_TOOLKIT_IMAGE_TAG=.*,NVIDIA_DRIVER_TOOLKIT_IMAGE_TAG=\"${{ inputs.tag }}\"," addons/version_info
       - name: Config PR committer
         run: |
           git config --global user.email "<${{ github.actor }}@users.noreply.github.com>"
@@ -61,10 +66,11 @@ jobs:
           {
             echo "prContent<<EOF"
             echo "**Problem:**"
-            echo "Harvester base OS needs to update."
+            echo "Harvester base OS and the nvidia driver toolkit built from it need to update."
             echo ""
             echo "**Solution:**"
-            echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})."
+            echo "Bump OS image to [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})"
+            echo "and the nvidia-driver-toolkit image tag to ${{ inputs.tag }}."
             echo ""
             echo "**Related Issue:**"
             echo ""
@@ -96,56 +102,4 @@ jobs:
             --head bump-os-${{ inputs.tag }} \
             --reviewer "harvester/os" \
             --title "Bump OS ${{ inputs.tag }}" \
-            --body "${{ env.prContent }}"
-
-  create-addon-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: fetch-target-version
-        run: |
-          echo "targetVersion=$(echo ${{ inputs.tag }} | cut -d'-' -f1)" >> $GITHUB_ENV
-      - name: Clone Addons repo
-        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-        with:
-          repository: harvester/addons
-          ref: ${{ env.targetVersion }}
-      - name: Update nvidia driver toolkit tag
-        run: |
-          sed -i "/tag:/ {N; /harvester-nvidia-driver-toolkit/ s/tag:.*\n/tag: ${{ inputs.tag }}\n/}" pkg/templates/rancherd-22-addons.yaml
-      - name: Config PR committer
-        run: |
-          git config --global user.email "<${{ github.actor }}@users.noreply.github.com>"
-          git config --global user.name "${{ github.actor }}"
-      - name: create PR content
-        run: |
-          echo "prContent<<EOF" >> $GITHUB_ENV
-          echo "**Problem:**" >> $GITHUB_ENV
-          echo "The nvidia driver toolkit needs to update." >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Solution:**" >> $GITHUB_ENV
-          echo "Bump nvidia driver toolkit image as related baseos [${{ env.IMAGE_NAME }}](https://github.com/harvester/os2/releases/tag/${{ inputs.tag }})." >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Related Issue:**" >> $GITHUB_ENV
-          echo "" >> $GITHUB_ENV
-          echo "**Test plan:**" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-
-      - name: Create Addons PR
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: |
-          git config --local --unset http.https://github.com/.extraheader ^AUTHORIZATION:
-          gh auth setup-git
-          if [ -z "$(git status --porcelain)" ]; then
-            echo "No changes to commit, skip PR creation."
-            exit 0
-          fi
-          git add .
-          git commit -s -m "Bump nvidia-driver-toolkit ${{ inputs.tag }}"
-          git push origin HEAD:bump-nv-driver-${{ inputs.tag }}
-          gh pr create \
-            --base ${{ env.targetVersion }} \
-            --head bump-nv-driver-${{ inputs.tag }} \
-            --reviewer "harvester/os" \
-            --title "Bump nvidia-driver-toolkit ${{ inputs.tag }}" \
             --body "${{ env.prContent }}"

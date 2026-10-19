@@ -49,10 +49,12 @@ jobs:
 
     - name: Build and publish ${{ matrix.image }} image
       if: ${{ inputs.push == true }}
-      uses: harvester/harvester-actions/actions/build-and-publish@18134d283bc63c5a7ffb25191e6cd2f367a10932 # main
+      uses: harvester/harvester-actions/actions/build-and-publish@a3d39c75b30420c5d4e2ce504a410c98a066ca79 # main
       with:
         release-tag-name: ${{ inputs.tag }}
         is-release: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        # OS releases are published to every registry.
+        registries: ${{ (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')) && 'docker-io,staging,prime' || 'auto' }}
         dockerfile: ${{ matrix.dockerfile }}
         image: ${{ matrix.image }}
         sbom: ${{ matrix.sbom }}

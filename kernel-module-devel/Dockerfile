@@ -1,4 +1,4 @@
-FROM registry.opensuse.org/isv/rancher/harvester/os/dev/main/baseos-headers:latest
+FROM registry.opensuse.org/isv/rancher/harvester/os/v1.10/main/baseos-headers:v1.10
 
 RUN \
 	zypper -n ar --refresh --gpgcheck --priority 100 --enable 'https://public-dl.suse.com/SUSE/Products/SLE-BCI/16.0/$basearch/product/' SLE_BCI && \

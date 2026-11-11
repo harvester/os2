@@ -1,0 +1,22 @@
+name: "SELinux"
+stages:
+  initramfs:
+    - name: "Relabeling to restore default SELinux security contexts"
+      commands:
+        - |
+          # Need to load the policy here because this stage executes
+          # before systemd does automatic policy loading. Without this,
+          # restorecon has no policy to work with, so does nothing.
+          load_policy -i
+          # Relabel all the RW/overlay paths, else by default the
+          # security context type will be something incorrect like
+          # unlabeled_t or tmpfs_t.
+          # We need to exclude /usr/local/.state from this, because
+          # the bind mounts under there are all already set correctly
+          # when we recursively relabel their proper parents (e.g.
+          # `restorecon /etc` takes care of /usr/local/.state/etc-ssh.bind)
+          # If we don't exclude /usr/local/.state, then everything under
+          # there gets mislabeled (e.g. files in /etc whose security
+          # context type was already correctly set to etc_t, would be
+          # changed to usr_t, which is wrong).
+          restorecon -R -i -v -e /usr/local/.state /etc /root /opt /srv /var /home /usr/local /oem /lib/firmware /usr/libexec
